@@ -12,7 +12,7 @@ class InstallerAPI(object):
             ]
 
     def get_item(self, id):
-        return "This is a name"
+        return "This is a name {}".format(id)
 
     def process(self, id, install=False, remove=False, status_callback=None, complete_callback=None):
         #Spawn process
@@ -58,29 +58,46 @@ class AddRemove(Frame):
         Frame.__init__(self, master)
         self.parent = parent
         self._api = api
+        self.items = [(id, status) for (id, status) in items.items() if status != 0]
         self._create_gui()
-        self.items = items.items()
 
     def _create_gui(self):
-        self.application_var = StringVar()
-        self.application_var.set("Getting Ready")
-        self.status_var = StringVar()
-        self.status_var.set("Starting up")
+        labelframe = LabelFrame(self, text='Updating applications')
+        labelframe.grid(row=1, column=1)
+        Label(labelframe, text="App", pady=8, ).grid(row=0, column=0)
+        Label(labelframe, text="Action", pady=8, width=10).grid(row=0, column=1)
+        Label(labelframe, text="Status", pady=8).grid(row=0, column=2)
 
-        Label(self, textvariable=self.application_var).grid(column=0, row=0)
-        Label(self, textvariable=self.status_var).grid(row=1, column=1)
+        self.app_vars = {}
+        y_pos = 0
+        for (id, addremove) in self.items:
+            y_pos += 1
+            name = self._api.get_item(id)
+            action = "Add" if addremove == 1 else "Remove"
+            colour = "#FFFFFF" if y_pos % 2 == 0 else "#DDDDDD"
+            self.app_vars[id] = {
+                'name': StringVar(value=name),
+                'status': StringVar(value="Getting Ready"),
+                'action': StringVar(value=action),
+                'complete': False
+                }
+            Label(labelframe, textvariable=self.app_vars[id]['name'], background=colour,borderwidth=8).grid(row=y_pos, column=0)
+            Label(labelframe, textvariable=self.app_vars[id]['action'], background=colour,borderwidth=8, width=10).grid(row=y_pos, column=1)
+            Label(labelframe, textvariable=self.app_vars[id]['status'], background=colour,borderwidth=8).grid(row=y_pos, column=2)
 
-    def _process_item(self):
-        item_id, status = self.items.pop()
-        install = True if status == 1 else False
-        remove = True if status == -1 else False
-        self.api.process(item_id, install=install, remove=remove, status_callback=self.status_callback, complete_callback=self.complete_callback)
 
-    def status_callback(self, status):
+    def _process_items(self):
+            item_id, status = self.items.pop()
+            install = True if status == 1 else False
+            remove = True if status == -1 else False
+            self.api.process(item_id, install=install, remove=remove, status_callback=self.status_callback, complete_callback=self.complete_callback)
+
+    def status_callback(self, id, status):
         self.status_var.set(status)
 
-    def complete_callback(self, success):
-        pass
+    def complete_callback(self, id, success):
+        self.app_vars[id][complete] = True
+        
 
 
 class InstallerUI(Frame):
