@@ -15,8 +15,8 @@ class InstallerAPI(object):
         return "This is a name {}".format(id)
 
     def process(self, id, install=False, remove=False, status_callback=None, complete_callback=None):
-        #Spawn process
-        pass
+        status_callback(id, "Woot")
+        complete_callback(id, True)
 
 
 class Selector(Frame):
@@ -81,23 +81,27 @@ class AddRemove(Frame):
                 'action': StringVar(value=action),
                 'complete': False
                 }
-            Label(labelframe, textvariable=self.app_vars[id]['name'], background=colour,borderwidth=8).grid(row=y_pos, column=0)
-            Label(labelframe, textvariable=self.app_vars[id]['action'], background=colour,borderwidth=8, width=10).grid(row=y_pos, column=1)
-            Label(labelframe, textvariable=self.app_vars[id]['status'], background=colour,borderwidth=8).grid(row=y_pos, column=2)
+            Label(labelframe, textvariable=self.app_vars[id]['name'], background=colour, pady=8).grid(row=y_pos, column=0)
+            Label(labelframe, textvariable=self.app_vars[id]['action'], background=colour, pady=8, width=10).grid(row=y_pos, column=1)
+            Label(labelframe, textvariable=self.app_vars[id]['status'], background=colour, pady=8).grid(row=y_pos, column=2)
+        self._process_items()
 
 
     def _process_items(self):
-            item_id, status = self.items.pop()
+        for item_id, status in self.items:
+            print(item_id)
             install = True if status == 1 else False
             remove = True if status == -1 else False
-            self.api.process(item_id, install=install, remove=remove, status_callback=self.status_callback, complete_callback=self.complete_callback)
+            self._api.process(item_id, install=install, remove=remove, status_callback=self.status_callback, complete_callback=self.complete_callback)
 
     def status_callback(self, id, status):
-        self.status_var.set(status)
+        print("Status Call")
+        self.app_vars[id]['status'].set(status)
 
     def complete_callback(self, id, success):
-        self.app_vars[id][complete] = True
-        
+        print("Complete call")
+        self.app_vars[id]['complete'] = True
+
 
 
 class InstallerUI(Frame):
