@@ -62,9 +62,13 @@ class AddRemove(Frame):
         self.items = items.items()
 
     def _create_gui(self):
-        frame_items = Label(self, text="Stuff goes here")
-        frame_items.grid(column=0, row=0)
+        self.application_var = StringVar()
+        self.application_var.set("Getting Ready")
+        self.status_var = StringVar()
+        self.status_var.set("Starting up")
 
+        Label(self, textvariable=self.application_var).grid(column=0, row=0)
+        Label(self, textvariable=self.status_var).grid(row=1, column=1)
 
     def _process_item(self):
         item_id, status = self.items.pop()
@@ -72,12 +76,10 @@ class AddRemove(Frame):
         remove = True if status == -1 else False
         self.api.process(item_id, install=install, remove=remove, status_callback=self.status_callback, complete_callback=self.complete_callback)
 
+    def status_callback(self, status):
+        self.status_var.set(status)
 
-    def status_callback(self):
-        pass
-
-
-    def complete_callback(self):
+    def complete_callback(self, success):
         pass
 
 
