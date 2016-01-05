@@ -1,0 +1,1 @@
+call python test\run_all_tests.py
