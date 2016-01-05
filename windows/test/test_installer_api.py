@@ -54,8 +54,5 @@ class InstallerAPITest(unittest.TestCase):
 
         self.assertEqual(expected_result, result)
 
-    def test_jenkins_fails_to_build(self):
-        self.assertTrue(False)
-
 if __name__ == '__main__':
     unittest.main()
