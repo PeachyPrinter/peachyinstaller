@@ -1,27 +1,12 @@
 from Tkinter import *
+import tkMessageBox
+from installer_api import InstallerAPIStub
 
-class InstallerAPI(object):
-    def check_version(self):
-        pass
-
-    def get_items(self):
-        return [
-            {'id': 1, 'name': "Item 1", 'installed': True},
-            {'id': 2, 'name': "Item 2", 'installed': False},
-            {'id': 3, 'name': "Item 3", 'installed': False}
-            ]
-
-    def get_item(self, id):
-        return "This is a name {}".format(id)
-
-    def process(self, id, install=False, remove=False, status_callback=None, complete_callback=None):
-        status_callback(id, "Woot")
-        complete_callback(id, True)
 
 
 class Selector(Frame):
     def __init__(self, parent, master, api):
-        Frame.__init__(self, master)
+        Frame.__init__(self, master, padx=50, pady=5)
         self.parent = parent
         self.install_items = {}
         self._api = api
@@ -32,7 +17,7 @@ class Selector(Frame):
         row = 0
         for item in self._api.get_items():
             row += 10
-            Label(frame_items, text=item['name'], width=30, anchor='w').grid(row=row, column=10)
+            Label(frame_items, text=item['name'], width=30, anchor='w', pady=8).grid(row=row, column=10)
             if item['installed']:
                 self.install_items[item['id']] = IntVar(value=0)
                 Checkbutton(frame_items, text='remove', anchor='w', width=6, variable=self.install_items[item['id']], onvalue=-1).grid(row=row, column=20)
@@ -41,9 +26,9 @@ class Selector(Frame):
                 Checkbutton(frame_items, text='add', anchor='w', width=6, variable=self.install_items[item['id']], onvalue=1).grid(row=row, column=20)
         frame_items.grid(row=0, column=0, columnspan=2)
         button_cancel = Button(self, text="Cancel", command=self._cancel)
-        button_cancel.grid(row=2, column=0)
+        button_cancel.grid(row=2, column=0, sticky=W)
         button_proceed = Button(self, text="Continue", command=self._continue)
-        button_proceed.grid(row=2, column=1)
+        button_proceed.grid(row=2, column=1, sticky=E)
 
     def _cancel(self):
         exit()
@@ -55,18 +40,18 @@ class Selector(Frame):
 
 class AddRemove(Frame):
     def __init__(self, parent, master, api, items):
-        Frame.__init__(self, master)
+        Frame.__init__(self, master, padx=5, pady=5)
         self.parent = parent
         self._api = api
-        self.items = [(id, status) for (id, status) in items.items() if status != 0]
+        self.items = items
         self._create_gui()
 
     def _create_gui(self):
         labelframe = LabelFrame(self, text='Updating applications')
         labelframe.grid(row=1, column=1)
-        Label(labelframe, text="App", pady=8, ).grid(row=0, column=0)
-        Label(labelframe, text="Action", pady=8, width=10).grid(row=0, column=1)
-        Label(labelframe, text="Status", pady=8).grid(row=0, column=2)
+        Label(labelframe, anchor=W, text="App", pady=8, width=30).grid(row=0, column=0, sticky=W)
+        Label(labelframe, anchor=W, text="Action", pady=8, width=10).grid(row=0, column=1, sticky=W)
+        Label(labelframe, anchor=W, text="Status", pady=8, width=46).grid(row=0, column=2, sticky=W)
 
         self.app_vars = {}
         y_pos = 0
@@ -81,9 +66,9 @@ class AddRemove(Frame):
                 'action': StringVar(value=action),
                 'complete': False
                 }
-            Label(labelframe, textvariable=self.app_vars[id]['name'], background=colour, pady=8).grid(row=y_pos, column=0)
-            Label(labelframe, textvariable=self.app_vars[id]['action'], background=colour, pady=8, width=10).grid(row=y_pos, column=1)
-            Label(labelframe, textvariable=self.app_vars[id]['status'], background=colour, pady=8).grid(row=y_pos, column=2)
+            Label(labelframe, anchor=W, textvariable=self.app_vars[id]['name'], background=colour, pady=8, width=30).grid(row=y_pos, column=0, sticky=W)
+            Label(labelframe, anchor=W, textvariable=self.app_vars[id]['action'], background=colour, pady=8, width=10).grid(row=y_pos, column=1, sticky=W)
+            Label(labelframe, anchor=W, textvariable=self.app_vars[id]['status'], background=colour, pady=8, width=46).grid(row=y_pos, column=2, sticky=W)
         self._process_items()
 
 
@@ -116,8 +101,8 @@ class InstallerUI(Frame):
         self.selector.grid(row=1, column=0)
         self.master.bind("<<CloseSelect>>", self._close_select, '+')
 
-    def _create_add_remove_gui(self):
-        self.add_remove = AddRemove(self, self.master, self._api, self.install_items)
+    def _create_add_remove_gui(self, items):
+        self.add_remove = AddRemove(self, self.master, self._api, items)
         self.add_remove.grid()
 
     def _close_select(self, event):
@@ -129,15 +114,20 @@ class InstallerUI(Frame):
                 print "Remove item: {}".format(item)
             if state == 1:
                 print "Install item: {}".format(item)
-        self._create_add_remove_gui()
+        items = [(id, status) for (id, status) in self.install_items.items() if status != 0]
+        if items:
+            self._create_add_remove_gui(items)
+        else:
+            tkMessageBox.showinfo("Woe there bucko", "No application selected for install or remove.\nExiting installation")
+            exit()
         self.master.update()
 
 
 if __name__ == '__main__':
-    api = InstallerAPI()
+    api = InstallerAPIStub()
     root = Tk()
     root.wm_title("Peachy Installer")
     root.resizable(width=FALSE, height=FALSE)
-    root.geometry('{}x{}'.format(350, 400))
+    root.geometry('{}x{}'.format(640, 400))
     i = InstallerUI(api, master=root)
     i.mainloop()
