@@ -57,18 +57,19 @@ ECHO ------------------------------------
 ECHO Creating Package
 ECHO ------------------------------------
 
-
+cd src
 pyinstaller --clean --noconfirm install.spec
 IF NOT "%ERRORLEVEL%" == "0" (
   ECHO FAILED executing command: pyinstaller --clean --noconfirm install.spec
   EXIT /B 78
 )
+cd ..
 
 ECHO ------------------------------------
 ECHO Moving file
 ECHO ------------------------------------
 
-COPY dist\PeachyInstaller*.exe .
+COPY src\dist\PeachyInstaller*.exe .
 IF NOT "%ERRORLEVEL%" == "0" (
     ECHO "FAILED moving files"
     EXIT /B 798
