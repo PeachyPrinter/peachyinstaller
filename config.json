@@ -1,12 +1,14 @@
-[
 {
-	"id": 1,
-	"name":	{
-		"en-us": "Peachy Printer (64 bit)",
-		},
-	"location": "http://someurl",
-	"install-path": "PeachyPrinter_64",
-	"executable" : "PeachyPrinter_amd64",
-},
-
-]
+	"version": 0,
+	"applications": [
+		{
+			"id": 1,
+			"name":	{
+				"en-us": "Peachy Printer (64 bit)",
+				},
+			"location": "http://someurl",
+			"install-path": "PeachyPrinter_64",
+			"executable" : "PeachyPrinter_amd64",
+		}
+	]
+}

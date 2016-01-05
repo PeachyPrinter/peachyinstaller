@@ -1,20 +1,23 @@
 import urllib2
+import json
+
 
 class InstallerAPIBase(object):
     def check_version(self):
-        raise NotImplementedException("This is not implemented at this time.")
+        raise NotImplementedError("This is not implemented at this time.")
 
     def get_items(self):
-        raise NotImplementedException("This is not implemented at this time.")
+        raise NotImplementedError("This is not implemented at this time.")
 
     def get_item(self, id):
-        raise NotImplementedException("This is not implemented at this time.")
+        raise NotImplementedError("This is not implemented at this time.")
 
     def process(self, id, install=False, remove=False, status_callback=None, complete_callback=None):
-        raise NotImplementedException("This is not implemented at this time.")
+        raise NotImplementedError("This is not implemented at this time.")
 
     def initialize(self):
-        raise NotImplementedException("This is not implemented at this time.")
+        raise NotImplementedError("This is not implemented at this time.")
+
 
 class InstallerAPIStub(InstallerAPIBase):
     product = [
@@ -41,9 +44,18 @@ class InstallerAPIStub(InstallerAPIBase):
     def initialize(self):
         return True
 
+
 class InstallerAPI(InstallerAPIBase):
+    supported_configuration_versions = [0, ]
     def __init__(self, config_url="http://www.github.com/peachyprinter/peachyinstaller/config.json"):
         self._config_url = config_url
+
+    def _check_config(self, config):
+        if "version" in config:
+            if config["version"] not in self.supported_configuration_versions:
+                return (False, 10304,  "Configuration version too new installer upgrade required")
+        else:
+            return (False, 10303, "Config is not valid")
 
     def initialize(self):
         result = urllib2.urlopen(self._config_url)
@@ -52,9 +64,11 @@ class InstallerAPI(InstallerAPIBase):
         try:
             data = result.read()
             config = json.loads(data)
-            # if self.check_config(config):
-            #     self._config = config
-            # else:
-            #     return (False, 10302, 'Data File Corrupt or damaged')
-        except:
+            result, error, message = self._check_config(config)
+            if result is True:
+                self._config = config
+            else:
+                return (False, error, message)
+        except Exception as ex:
+            print ex
             return(False, 10302, 'Data File Corrupt or damaged')

@@ -21,6 +21,8 @@ class Selector(Frame):
             if item['installed']:
                 self.install_items[item['id']] = IntVar(value=0)
                 Checkbutton(frame_items, text='remove', anchor='w', width=6, variable=self.install_items[item['id']], onvalue=-1).grid(row=row, column=20)
+                self.install_items[item['id']] = IntVar(value=0)
+                Checkbutton(frame_items, text='upgrade', anchor='w', width=6, variable=self.install_items[item['id']], onvalue=2).grid(row=row, column=30)
             else:
                 self.install_items[item['id']] = IntVar(value=0)
                 Checkbutton(frame_items, text='add', anchor='w', width=6, variable=self.install_items[item['id']], onvalue=1).grid(row=row, column=20)
