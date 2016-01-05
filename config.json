@@ -6,8 +6,9 @@
 			"name":	{
 				"en-us": "Peachy Printer (64 bit)",
 				},
+			"version": "0.1.2",
 			"location": "http://someurl",
-			"install-path": "PeachyPrinter_64",
+			"install_path": "PeachyPrinter_64",
 			"executable" : "PeachyPrinter_amd64",
 		}
 	]

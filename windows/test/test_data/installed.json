@@ -1,0 +1,11 @@
+{
+    "update": 123456789,
+    "applications":[
+        {
+        "id": 1,
+        "install_directory": "c:\\Program/ Files\\Peachy\\PeachyPrinter_64",
+        "version": "0.1.0",
+        "install_date": 123456789
+        }
+    ]
+}
