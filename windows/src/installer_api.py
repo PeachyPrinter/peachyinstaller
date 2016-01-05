@@ -44,6 +44,11 @@ class InstallerAPIStub(InstallerAPIBase):
     def initialize(self):
         return True
 
+class ConfigException(Exception):
+    def __init__(self, error_code, message):
+        super(ConfigException, self).__init__(message)
+        self.error_code = error_code
+
 class Application(object):
     def __init__(self, web_config, installed_config = None):
         if installed_config and installed_config['id'] != web_config['id']:
@@ -61,6 +66,16 @@ class Application(object):
             self.full_installed_path = None
             self.current_version = None
 
+    @property
+    def actions(self):
+        if self.current_version is not None:
+            if self.current_version == self.available_version:
+                return ['remove']
+            else:
+                return ['remove', 'upgrade']
+        else:
+            return ['install']
+
     def __eq__(self, other):
         return (
             self.id == other.id and
@@ -76,34 +91,37 @@ class Application(object):
 
 class InstallerAPI(InstallerAPIBase):
     supported_configuration_versions = [0, ]
+
     def __init__(self, config_url="http://www.github.com/peachyprinter/peachyinstaller/config.json"):
         self._config_url = config_url
 
     def _check_web_config(self, config):
         if "version" in config:
             if config["version"] not in self.supported_configuration_versions:
-                return (False, 10304,  "Configuration version too new installer upgrade required")
-            else:
-                return (True, 0, "Success")
+                raise ConfigException(10304,  "Configuration version too new installer upgrade required")
         else:
-            return (False, 10303, "Config is not valid")
+            raise ConfigException(10303, "Config is not valid")
 
-    def initialize(self):
+    def _get_web_config(self):
         result = urllib2.urlopen(self._config_url)
         if result.getcode() != 200:
-            return (False, 10301, 'Connection unavailable')
+            raise ConfigException(10301, 'Connection unavailable')
         try:
             data = result.read()
             config = json.loads(data)
-            result, error, message = self._check_web_config(config)
-            if result is True:
-                self._web_config = config
-                return (True, "0", "Success")
-            else:
-                return (False, error, message)
-        except Exception as ex:
-            print ex
-            return(False, 10302, 'Data File Corrupt or damaged')
+            self._check_web_config(config)
+            return config
+        except ConfigException:
+            raise
+        except Exception:
+            raise ConfigException(10302, 'Data File Corrupt or damaged')
+
+    def initialize(self):
+        try:
+            self._web_config = self._get_web_config()
+        except ConfigException as cfgex:
+            return (False, cfgex.error_code, cfgex.message)
+        return (True, "0", "Success")
 
     def get_items(self):
         return [Application(app) for app in self._web_config['applications']]

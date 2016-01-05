@@ -79,7 +79,6 @@ class InstallerAPITest(unittest.TestCase):
 
         self.assertEqual(expected_result, result)
 
-
 class ApplicationTest(unittest.TestCase):
 
     def get_sample_web_config(self):
@@ -139,5 +138,34 @@ class ApplicationTest(unittest.TestCase):
         app2 = Application(web_config, installed_config)
         self.assertEquals(app1, app2)
 
+    def test_actions_should_be_install_if_no_existing_version(self):
+        web_config = self.get_sample_web_config()
+        app = Application(web_config)
+        
+        self.assertEquals(1, len(app.actions))
+        self.assertEquals('install', app.actions[0])
+
+    def test_actions_should_be_remove_if_version_of_installed_equal_to_new_version(self):
+        installed_config = self.get_sample_installed_config()
+        web_config = self.get_sample_web_config()
+        installed_config['version'] = '2.3.4'
+        web_config['version'] = '2.3.4'
+        app = Application(web_config, installed_config)
+        
+        self.assertEquals(1, len(app.actions))
+        self.assertEquals('remove', app.actions[0])
+
+    def test_actions_should_be_remove_and_upgrade_if_version_of_installed_not_equal_to_new_version(self):
+        installed_config = self.get_sample_installed_config()
+        web_config = self.get_sample_web_config()
+        installed_config['version'] = '2.3.4'
+        web_config['version'] = '2.4.4'
+        app = Application(web_config, installed_config)
+        self.assertEquals(2, len(app.actions))
+        self.assertTrue('remove' in app.actions)
+        self.assertTrue('upgrade' in app.actions)
+
+
 if __name__ == '__main__':
     unittest.main()
+
