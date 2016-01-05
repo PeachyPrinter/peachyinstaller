@@ -1,3 +1,4 @@
+import sys
 from Tkinter import *
 import tkMessageBox
 from installer_api import InstallerAPIStub
@@ -33,7 +34,7 @@ class Selector(Frame):
         button_proceed.grid(row=2, column=1, sticky=E)
 
     def _cancel(self):
-        exit()
+        sys.exit()
 
     def _continue(self):
         self.parent.install_items = dict([(item, state.get()) for (item, state) in self.install_items.items()])
@@ -121,7 +122,7 @@ class InstallerUI(Frame):
             self._create_add_remove_gui(items)
         else:
             tkMessageBox.showinfo("Woe there bucko", "No application selected for install or remove.\nExiting installation")
-            exit()
+            sys.exit()
         self.master.update()
 
 

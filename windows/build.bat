@@ -15,7 +15,7 @@ ECHO Setting up Enviroment
 ECHO ------------------------------------
 
 call virtualenv venv
-call venv\bin\activate.bat
+call venv\Scripts\activate.bat
 
 ECHO ----Adding PyInstaller----
 call pip install --upgrade PyInstaller
@@ -58,9 +58,9 @@ ECHO Creating Package
 ECHO ------------------------------------
 
 
-pyinstaller --clean --noconfirm PeachyInstaller.spec
+pyinstaller --clean --noconfirm install.spec
 IF NOT "%ERRORLEVEL%" == "0" (
-  ECHO FAILED executing command: pyinstaller --clean --noconfirm PeachyInstaller.spec
+  ECHO FAILED executing command: pyinstaller --clean --noconfirm install.spec
   EXIT /B 78
 )
 
