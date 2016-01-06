@@ -4,6 +4,174 @@
 		"selected_items":
 		[
 			[
+				"ch",
+				"chunk	statement"
+			],
+			[
+				"ass",
+				"assertEquals	statement"
+			],
+			[
+				"ca",
+				"call_args	statement"
+			],
+			[
+				"mo",
+				"mock_open_file	statement"
+			],
+			[
+				"file",
+				"file_path	statement"
+			],
+			[
+				"ex",
+				"except	keyword"
+			],
+			[
+				"mock",
+				"mock_open	function"
+			],
+			[
+				"a",
+				"a_file"
+			],
+			[
+				"Ins",
+				"InstallerException	class"
+			],
+			[
+				"Magic",
+				"MagicMock	class"
+			],
+			[
+				"resp",
+				"response"
+			],
+			[
+				"response",
+				"test_run_should_report_failure_if_response_is_not_200"
+			],
+			[
+				"sleep",
+				"sleep_time"
+			],
+			[
+				"app",
+				"application"
+			],
+			[
+				"get",
+				"getenv	function"
+			],
+			[
+				"get_S",
+				"get_sample_web_config	function"
+			],
+			[
+				"App",
+				"ApplicationInstallTest"
+			],
+			[
+				"mocik",
+				"mock_open_file"
+			],
+			[
+				"get_sample_",
+				"get_sample_file_config"
+			],
+			[
+				"ins",
+				"installed_config	param"
+			],
+			[
+				"exp",
+				"expected_app"
+			],
+			[
+				"test",
+				"test_installer_api	statement"
+			],
+			[
+				"Test",
+				"TestHelpers"
+			],
+			[
+				"Tes",
+				"TestHelpers"
+			],
+			[
+				"fil",
+				"file_app	statement"
+			],
+			[
+				"fi",
+				"file_path	statement"
+			],
+			[
+				"_get",
+				"_get_file_config_path	function"
+			],
+			[
+				"tes",
+				"test_installer_api	statement"
+			],
+			[
+				"ap",
+				"app_name	statement"
+			],
+			[
+				"comp",
+				"company_name	statement"
+			],
+			[
+				"Conf",
+				"ConfigException	class"
+			],
+			[
+				"err",
+				"error_code	statement"
+			],
+			[
+				"error",
+				"error_code	param"
+			],
+			[
+				"inst",
+				"installed_config	statement"
+			],
+			[
+				"p",
+				"property	New Property"
+			],
+			[
+				"assertE",
+				"assertEquals	statement"
+			],
+			[
+				"s",
+				"sample	statement"
+			],
+			[
+				"sam",
+				"sample_installed_config	statement"
+			],
+			[
+				"sample",
+				"sample_installed_config"
+			],
+			[
+				"init",
+				"init_result	statement"
+			],
+			[
+				"ini",
+				"init_result	statement"
+			],
+			[
+				"assertT",
+				"assertTrue	function"
+			],
+			[
 				"Not",
 				"NotImplementedError	class"
 			],
@@ -14,10 +182,6 @@
 			[
 				"In",
 				"InstallerAPI"
-			],
-			[
-				"Ins",
-				"InstallerAPIStub"
 			],
 			[
 				"pr",
@@ -31,7 +195,7 @@
 			"file": "windows/src/install.py",
 			"settings":
 			{
-				"buffer_size": 5473,
+				"buffer_size": 5859,
 				"line_ending": "Windows"
 			}
 		},
@@ -39,7 +203,31 @@
 			"file": "windows/src/installer_api.py",
 			"settings":
 			{
-				"buffer_size": 2326,
+				"buffer_size": 3734,
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"file": "windows/src/application.py",
+			"settings":
+			{
+				"buffer_size": 1627,
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"file": "windows/src/application_install.py",
+			"settings":
+			{
+				"buffer_size": 1728,
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"file": "windows/test/test_application_installer.py",
+			"settings":
+			{
+				"buffer_size": 3484,
 				"line_ending": "Windows"
 			}
 		},
@@ -47,17 +235,16 @@
 			"file": "windows/test/test_installer_api.py",
 			"settings":
 			{
-				"buffer_size": 1786,
+				"buffer_size": 6394,
 				"line_ending": "Windows"
 			}
 		},
 		{
-			"file": "config.json",
+			"file": "windows/test/helpers.py",
 			"settings":
 			{
-				"buffer_size": 219,
-				"line_ending": "Windows",
-				"name": "["
+				"buffer_size": 1238,
+				"line_ending": "Windows"
 			}
 		}
 	],
@@ -124,11 +311,21 @@
 	[
 		"/C/Users/jtownley/git/peachyinstaller",
 		"/C/Users/jtownley/git/peachyinstaller/windows",
-		"/C/Users/jtownley/git/peachyinstaller/windows/src",
 		"/C/Users/jtownley/git/peachyinstaller/windows/test"
 	],
 	"file_history":
 	[
+		"/C/Users/jtownley/git/peachyinstaller/windows/test/test_installer_api.py",
+		"/C/Users/jtownley/git/peachyinstaller/windows/test/test_application.py",
+		"/C/Users/jtownley/git/peachyinstaller/windows/test/helpers.py",
+		"/C/Users/jtownley/git/peachyinstaller/config.json",
+		"/C/Users/jtownley/git/peachyinstaller/windows/test/test_data/installed.json",
+		"/C/Users/jtownley/git/peachyinstaller/windows/test.bat",
+		"/C/Users/jtownley/git/peachyinstaller/windows/test/run_all_tests.py",
+		"/C/Users/jtownley/git/peachyinstaller/windows/src/install.spec",
+		"/C/Users/jtownley/git/peachyinstaller/windows/build.bat",
+		"/C/Users/jtownley/git/peachyinstaller/peachyinstaller.sublime-project",
+		"/C/Users/jtownley/AppData/Roaming/Sublime Text 3/Packages/User/Preferences.sublime-settings",
 		"/C/Users/jtownley/AppData/Roaming/Sublime Text 3/Packages/User/Anaconda.sublime-settings",
 		"/C/Users/jtownley/AppData/Roaming/Sublime Text 3/Packages/GitGutter/GitGutter.sublime-settings",
 		"/C/Users/jtownley/AppData/Roaming/Sublime Text 3/Packages/User/GitGutter.sublime-settings",
@@ -138,7 +335,7 @@
 	],
 	"find":
 	{
-		"height": 23.0
+		"height": 34.0
 	},
 	"find_in_files":
 	{
@@ -152,6 +349,26 @@
 		"case_sensitive": false,
 		"find_history":
 		[
+			"a_file",
+			"make_mock_response",
+			"['id']",
+			"InstallerAPIStub",
+			"print",
+			"webitem",
+			"get_sample_web_config",
+			"self, mock_urllib2",
+			"return (False, ",
+			"self.",
+			" = ",
+			"_check_config",
+			"webconfig",
+			"file_config",
+			"['en-us']",
+			")\n",
+			"'],",
+			"exit()",
+			"Exit",
+			"exit",
 			"NotImplementedException",
 			"'"
 		],
@@ -171,7 +388,7 @@
 	"groups":
 	[
 		{
-			"selected": 1,
+			"selected": 3,
 			"sheets":
 			[
 				{
@@ -180,15 +397,15 @@
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 5473,
+						"buffer_size": 5859,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								451,
-								451
+								1636,
+								1636
 							]
 						],
 						"settings":
@@ -201,7 +418,7 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 2,
+					"stack_index": 6,
 					"type": "text"
 				},
 				{
@@ -210,15 +427,45 @@
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 2326,
+						"buffer_size": 3734,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								2326,
-								2326
+								868,
+								698
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/Python/Python.tmLanguage",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": -0.0,
+						"translation.y": 630.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 3,
+					"type": "text"
+				},
+				{
+					"buffer": 2,
+					"file": "windows/src/application.py",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 1627,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								1095,
+								1095
 							]
 						],
 						"settings":
@@ -228,7 +475,35 @@
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 450.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 4,
+					"type": "text"
+				},
+				{
+					"buffer": 3,
+					"file": "windows/src/application_install.py",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 1728,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								1214,
+								1214
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/Python/Python.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 135.0,
 						"zoom_level": 1.0
 					},
 					"stack_index": 1,
@@ -241,20 +516,20 @@
 			"sheets":
 			[
 				{
-					"buffer": 2,
-					"file": "windows/test/test_installer_api.py",
+					"buffer": 4,
+					"file": "windows/test/test_application_installer.py",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 1786,
+						"buffer_size": 3484,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								947,
-								947
+								2740,
+								2751
 							]
 						],
 						"settings":
@@ -264,39 +539,70 @@
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 0.0,
+						"translation.y": 675.0,
 						"zoom_level": 1.0
 					},
 					"stack_index": 0,
 					"type": "text"
 				},
 				{
-					"buffer": 3,
-					"file": "config.json",
+					"buffer": 5,
+					"file": "windows/test/test_installer_api.py",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 219,
+						"buffer_size": 6394,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								219,
-								219
+								3958,
+								4276
 							]
 						],
 						"settings":
 						{
-							"auto_name": "[",
-							"syntax": "Packages/JavaScript/JSON.tmLanguage"
+							"syntax": "Packages/Python/Python.tmLanguage",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 0.0,
+						"translation.y": 1080.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 3,
+					"stack_index": 2,
+					"type": "text"
+				},
+				{
+					"buffer": 6,
+					"file": "windows/test/helpers.py",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 1238,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								1234,
+								1234
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/Python/Python.tmLanguage",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": -0.0,
+						"translation.y": 270.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 5,
 					"type": "text"
 				}
 			]
@@ -330,7 +636,7 @@
 		"cols":
 		[
 			0.0,
-			0.5,
+			0.446327683616,
 			1.0
 		],
 		"rows":
@@ -361,6 +667,18 @@
 		"last_filter": "",
 		"selected_items":
 		[
+			[
+				"test",
+				"windows\\test\\test_installer_api.py"
+			],
+			[
+				"help",
+				"windows\\test\\helpers.py"
+			],
+			[
+				"",
+				"config.json"
+			]
 		],
 		"width": 0.0
 	},
@@ -390,7 +708,7 @@
 	"show_open_files": false,
 	"show_tabs": true,
 	"side_bar_visible": false,
-	"side_bar_width": 150.0,
+	"side_bar_width": 270.0,
 	"status_bar_visible": true,
 	"template_settings":
 	{

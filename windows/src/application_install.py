@@ -25,10 +25,12 @@ class InstallApplication(threading.Thread):
         file_path = os.path.join(self._temp_file_location, url.split('/')[-1])
         try:
             with open(file_path, 'wb') as zip_file:
+                total_read = 0
                 while True:
                     chunk = response.read(self.CHUNK_SIZE)
                     if not chunk:
                         break
+                    total_read += len(chunk)
                     zip_file.write(chunk)
         except IOError:
             raise InstallerException(10502, "Error creating file: {}".format(file_path))
