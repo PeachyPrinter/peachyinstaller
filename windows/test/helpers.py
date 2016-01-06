@@ -1,4 +1,11 @@
 import json
+import sys
+import os
+
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..',))
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', 'src'))
+
+from application import Application
 
 class TestHelpers(object):
     def get_sample_application_config(self):
@@ -30,3 +37,6 @@ class TestHelpers(object):
 
     def get_sample_file_config(self):
         return '{"version": 0, "applications":[%s]}' % json.dumps(self.get_sample_installed_config())
+
+    def get_application(self):
+        return Application(self.get_sample_application_config())

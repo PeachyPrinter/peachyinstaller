@@ -1,8 +1,6 @@
 import unittest
 import os
 import sys
-import json
-from mock import patch, MagicMock, mock_open
 from helpers import TestHelpers
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..',))
