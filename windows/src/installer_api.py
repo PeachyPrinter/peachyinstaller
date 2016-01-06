@@ -45,13 +45,15 @@ class InstallerAPIStub(InstallerAPIBase):
     def initialize(self):
         return True
 
+
 class ConfigException(Exception):
     def __init__(self, error_code, message):
         super(ConfigException, self).__init__(message)
         self.error_code = error_code
 
+
 class Application(object):
-    def __init__(self, web_config, installed_config = None):
+    def __init__(self, web_config, installed_config=None):
         if installed_config and installed_config['id'] != web_config['id']:
             raise Exception("Unexpected error processing config")
         self.id = web_config['id']
@@ -95,6 +97,7 @@ class InstallerAPI(InstallerAPIBase):
 
     def __init__(self, config_url="http://www.github.com/peachyprinter/peachyinstaller/config.json"):
         self._config_url = config_url
+        self._applications = []
 
     def _check_web_config(self, config):
         if "version" in config:
@@ -129,18 +132,31 @@ class InstallerAPI(InstallerAPIBase):
             if not os.path.exists(file_path):
                 return None
             with open(file_path, 'r') as a_file:
-                a_file.read()
-                return None
+                data = a_file.read()
+                return json.loads(data)
         except IOError:
             raise ConfigException(10401, "Install File Inaccessable")
+        except ValueError:
+            raise ConfigException(10402, "Install File Corrupt or Damaged")
 
     def initialize(self):
         try:
-            self._web_config = self._get_web_config()
-            self._file_config = self._get_file_config()
+            web_config = self._get_web_config()
+            file_config = self._get_file_config()
+            if file_config:
+                file_config_ids = [app['id'] for app in file_config['applications']]
+            else:
+                file_config_ids = []
+
+            for web_app in web_config['applications']:
+                if web_app['id'] in file_config_ids:
+                    file_app = [app for app in file_config['applications'] if app['id'] == web_app['id']][0]
+                    self._applications.append(Application(web_app, file_app))
+                else:
+                    self._applications.append(Application(web_app))
         except ConfigException as cfgex:
             return (False, cfgex.error_code, cfgex.message)
         return (True, "0", "Success")
 
     def get_items(self):
-        return [Application(app) for app in self._web_config['applications']]
+        return self._applications

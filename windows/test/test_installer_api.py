@@ -9,10 +9,8 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', 'src'))
 
 from installer_api import InstallerAPI, Application
 
-@patch.object(os.path, 'exists')
-@patch('installer_api.urllib2')
-class InstallerAPITest(unittest.TestCase):
 
+class TestHelpers(object):
     def get_sample_application_config(self):
         return {
             "id": 1,
@@ -27,6 +25,24 @@ class InstallerAPITest(unittest.TestCase):
 
     def get_sample_web_config(self):
         return '{"version": 0, "applications":[%s]}' % json.dumps(self.get_sample_application_config())
+
+    def get_sample_installed_config(self):
+        return {
+            "id": 1,
+            "name": {
+                "en-us": "aa",
+                },
+            "version": "0.1.1",
+            "installed_path": "bb",
+    }
+
+    def get_sample_file_config(self):
+        return '{"version": 0, "applications":[%s]}' % json.dumps(self.get_sample_installed_config())
+
+
+@patch.object(os.path, 'exists')
+@patch('installer_api.urllib2')
+class InstallerAPITest(unittest.TestCase, TestHelpers):
 
     def make_mock_response(self, code=200, data=""):
         response = MagicMock()
@@ -96,7 +112,8 @@ class InstallerAPITest(unittest.TestCase):
 
         self.assertEqual(expected_result, result)
 
-    def test_if_file_config_exists_and_is_inaccessable(self, mock_urllib2, mock_exists):
+    def test_initialize_if_file_config_exists_and_is_inaccessable(self, mock_urllib2, mock_exists):
+        mock_exists.return_value = True
         expected_result = (False, 10401, "Install File Inaccessable")
         mock_urllib2.urlopen.return_value = self.make_mock_response(code=200, data=self.get_sample_web_config())
         mock_open_file = mock_open()
@@ -106,29 +123,35 @@ class InstallerAPITest(unittest.TestCase):
             result = test_installer_api.initialize()
             self.assertEquals(expected_result, result)
 
-class ApplicationTest(unittest.TestCase):
+    def test_initialize_if_file_config_exists_and_is_not_json(self, mock_urllib2, mock_exists):
+        mock_exists.return_value = True
+        expected_result = (False, 10402, "Install File Corrupt or Damaged")
+        mock_urllib2.urlopen.return_value = self.make_mock_response(code=200, data=self.get_sample_web_config())
+        mock_open_file = mock_open(read_data="Not Json")
+        with patch('installer_api.open', mock_open_file, create=True):
+            mock_open_file.read = IOError("Mock Error")
+            test_installer_api = InstallerAPI()
+            result = test_installer_api.initialize()
+            self.assertEquals(expected_result, result)
 
-    def get_sample_application_config(self):
-        return {
-            "id": 1,
-            "name": {
-                "en-us": "aa",
-                },
-            "version": "0.1.2",
-            "location": "http://someurl",
-            "install_path": "bb",
-            "executable": "cc.exe",
-        }
+    def test_initialize_should_create_correct_application(self, mock_urllib2, mock_exists):
+        mock_exists.return_value = True
+        mock_urllib2.urlopen.return_value = self.make_mock_response(code=200, data=self.get_sample_web_config())
+        mock_open_file = mock_open(read_data=self.get_sample_file_config())
+        expected_app = Application(self.get_sample_application_config(), self.get_sample_installed_config())
 
-    def get_sample_installed_config(self):
-        return {
-            "id": 1,
-            "name": {
-                "en-us": "aa",
-                },
-            "version": "0.1.1",
-            "installed_path": "bb",
-    }
+        with patch('installer_api.open', mock_open_file, create=True):
+            mock_open_file.read = IOError("Mock Error")
+            test_installer_api = InstallerAPI()
+
+            result = test_installer_api.initialize()
+            self.assertTrue(result[0])
+            apps = test_installer_api.get_items()
+
+            self.assertEquals(1, len(apps))
+            self.assertEquals(expected_app, apps[0])
+
+class ApplicationTest(unittest.TestCase, TestHelpers):
 
     def test_raises_exception_if_ids_do_not_match(self):
         file_config = self.get_sample_installed_config()
