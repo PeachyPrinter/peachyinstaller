@@ -4,7 +4,6 @@ import tkMessageBox
 from installer_api import InstallerAPI
 
 
-
 class Selector(Frame):
     def __init__(self, parent, master, api):
         Frame.__init__(self, master, padx=50, pady=5)
@@ -18,15 +17,15 @@ class Selector(Frame):
         row = 0
         for item in self._api.get_items():
             row += 10
-            Label(frame_items, text=item['name'], width=30, anchor='w', pady=8).grid(row=row, column=10)
-            if item['installed']:
-                self.install_items[item['id']] = IntVar(value=0)
-                Checkbutton(frame_items, text='remove', anchor='w', width=6, variable=self.install_items[item['id']], onvalue=-1).grid(row=row, column=20)
-                self.install_items[item['id']] = IntVar(value=0)
-                Checkbutton(frame_items, text='upgrade', anchor='w', width=6, variable=self.install_items[item['id']], onvalue=2).grid(row=row, column=30)
+            Label(frame_items, text=item.name, width=30, anchor='w', pady=8).grid(row=row, column=10)
+            if item.current_version:
+                self.install_items[item.id] = IntVar(value=0)
+                Checkbutton(frame_items, text='remove', anchor='w', width=6, variable=self.install_items[item.id], onvalue=-1).grid(row=row, column=20)
+                self.install_items[item.id] = IntVar(value=0)
+                Checkbutton(frame_items, text='upgrade', anchor='w', width=6, variable=self.install_items[item.id], onvalue=2).grid(row=row, column=30)
             else:
-                self.install_items[item['id']] = IntVar(value=0)
-                Checkbutton(frame_items, text='add', anchor='w', width=6, variable=self.install_items[item['id']], onvalue=1).grid(row=row, column=20)
+                self.install_items[item.id] = IntVar(value=0)
+                Checkbutton(frame_items, text='add', anchor='w', width=6, variable=self.install_items[item.id], onvalue=1).grid(row=row, column=20)
         frame_items.grid(row=0, column=0, columnspan=2)
         button_cancel = Button(self, text="Cancel", command=self._cancel)
         button_cancel.grid(row=2, column=0, sticky=W)
@@ -134,5 +133,8 @@ if __name__ == '__main__':
     root.wm_title("Peachy Installer")
     root.resizable(width=FALSE, height=FALSE)
     root.geometry('{}x{}'.format(640, 400))
+    if not result:
+        tkMessageBox.showinfo("Something annoying has occured", message)
+        sys.exit()
     i = InstallerUI(api, master=root)
     i.mainloop()

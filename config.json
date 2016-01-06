@@ -9,7 +9,9 @@
 			"version": "0.1.2",
 			"location": "http://someurl",
 			"install_path": "PeachyPrinter_64",
-			"executable" : "PeachyPrinter_amd64"
+			"executable" : "PeachyPrinter_amd64",
+			"install_type": "zip",
+			"icon_path": "resources\\peachy.ico"
 		}
 	]
 }
