@@ -1,7 +1,7 @@
 import sys
 from Tkinter import *
 import tkMessageBox
-from installer_api import InstallerAPIStub
+from installer_api import InstallerAPI
 
 
 
@@ -127,7 +127,9 @@ class InstallerUI(Frame):
 
 
 if __name__ == '__main__':
-    api = InstallerAPIStub()
+    api = InstallerAPI()
+    result, code, message = api.initialize()
+    print message
     root = Tk()
     root.wm_title("Peachy Installer")
     root.resizable(width=FALSE, height=FALSE)

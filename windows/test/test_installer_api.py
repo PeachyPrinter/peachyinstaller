@@ -151,6 +151,18 @@ class InstallerAPITest(unittest.TestCase, TestHelpers):
             self.assertEquals(1, len(apps))
             self.assertEquals(expected_app, apps[0])
 
+    def test_get_item_responds_with_specific_application(self, mock_urllib2, mock_exists):
+        mock_exists.return_value = False
+        mock_urllib2.urlopen.return_value = self.make_mock_response(code=200, data=self.get_sample_web_config())
+        expected_app = Application(self.get_sample_application_config())
+        test_installer_api = InstallerAPI()
+
+        result = test_installer_api.initialize()
+        self.assertTrue(result[0])
+        app = test_installer_api.get_item(expected_app.id)
+
+        self.assertEquals(expected_app, app)
+
 class ApplicationTest(unittest.TestCase, TestHelpers):
 
     def test_raises_exception_if_ids_do_not_match(self):

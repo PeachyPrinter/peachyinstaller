@@ -4,12 +4,12 @@
 		{
 			"id": 1,
 			"name":	{
-				"en-us": "Peachy Printer (64 bit)",
+				"en-us": "Peachy Printer (64 bit)"
 				},
 			"version": "0.1.2",
 			"location": "http://someurl",
 			"install_path": "PeachyPrinter_64",
-			"executable" : "PeachyPrinter_amd64",
+			"executable" : "PeachyPrinter_amd64"
 		}
 	]
 }

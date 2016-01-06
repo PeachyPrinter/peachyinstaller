@@ -95,7 +95,7 @@ class Application(object):
 class InstallerAPI(InstallerAPIBase):
     supported_configuration_versions = [0, ]
 
-    def __init__(self, config_url="http://www.github.com/peachyprinter/peachyinstaller/config.json"):
+    def __init__(self, config_url="https://raw.githubusercontent.com/PeachyPrinter/peachyinstaller/master/config.json"):
         self._config_url = config_url
         self._applications = []
 
@@ -160,3 +160,6 @@ class InstallerAPI(InstallerAPIBase):
 
     def get_items(self):
         return self._applications
+
+    def get_item(self, id):
+        return [app for app in self._applications if app.id == id][0]
