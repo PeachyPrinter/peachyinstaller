@@ -1,5 +1,6 @@
 import urllib2
 import json
+import os
 
 
 class InstallerAPIBase(object):
@@ -114,11 +115,29 @@ class InstallerAPI(InstallerAPIBase):
         except ConfigException:
             raise
         except Exception:
-            raise ConfigException(10302, 'Data File Corrupt or damaged')
+            raise ConfigException(10302, 'Web data File Corrupt or damaged')
+
+    def _get_file_config_path(self):
+        profile = os.getenv('USERPROFILE')
+        company_name = "Peachy"
+        app_name = 'PeachyInstaller'
+        return os.path.join(profile, 'AppData', 'Local', company_name, app_name, 'installed.json')
+
+    def _get_file_config(self,):
+        file_path = self._get_file_config_path()
+        try:
+            if not os.path.exists(file_path):
+                return None
+            with open(file_path, 'r') as a_file:
+                a_file.read()
+                return None
+        except IOError:
+            raise ConfigException(10401, "Install File Inaccessable")
 
     def initialize(self):
         try:
             self._web_config = self._get_web_config()
+            self._file_config = self._get_file_config()
         except ConfigException as cfgex:
             return (False, cfgex.error_code, cfgex.message)
         return (True, "0", "Success")
