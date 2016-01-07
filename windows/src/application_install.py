@@ -17,6 +17,15 @@ class InstallApplication(threading.Thread):
         self._status_callback = status_callback
         self._complete_callback = complete_callback
         self.CHUNK_SIZE = 16 * 1024
+        self._report_status("Initializing")
+
+    def _report_status(self, message):
+        if self._status_callback:
+            self._status_callback(message)
+
+    def _report_complete(self, success, message):
+        if self._complete_callback:
+            self._complete_callback(success, message)
 
     def _fetch_zip(self, url):
         response = urllib2.urlopen(url)
@@ -32,14 +41,19 @@ class InstallApplication(threading.Thread):
                         break
                     total_read += len(chunk)
                     zip_file.write(chunk)
+            return file_path
         except IOError:
             raise InstallerException(10502, "Error creating file: {}".format(file_path))
 
     def run(self):
         try:
-            self._fetch_zip(self._application.download_location)
-            self._complete_callback(True, "Success")
+            self._report_status("Downloading")
+            file_path = self._fetch_zip(self._application.download_location)
+            self._report_status("Unpacking")
+            self._report_status("Installing")
+            self._report_status("Creating Shortcuts")
+            self._report_status("Finalizing")
+            self._report_complete(True, "Success")
         except InstallerException as ex:
-            if self._complete_callback:
-                self._complete_callback(False, ex.message)
+            self._report_complete(False, ex.message)
 
