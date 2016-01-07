@@ -51,11 +51,16 @@ class InstallApplication(threading.Thread):
 
     def _fetch_zip(self, url):
         logger.info("Downloading from: {}".format(url))
-        response = urllib2.urlopen(url)
+        try:
+            response = urllib2.urlopen(url)
+        except Exception as ex:
+            logger.error(ex)
+            raise InstallerException(10507, 'Bad URL')
         if response.getcode() != 200:
             raise InstallerException(10501, "Got error {} accessing {}".format(response.getcode(), url))
         file_path = os.path.join(self._temp_file_location, url.split('/')[-1])
         logger.info("Saving to: {}".format(file_path))
+
         try:
             with open(file_path, 'wb') as zip_file:
                 total_read = 0

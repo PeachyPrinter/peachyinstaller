@@ -7,9 +7,9 @@
 				"en-us": "Peachy Printer (64 bit)"
 				},
 			"version": "0.1.2",
-			"location": "http://someurl",
+			"location": "http://192.168.1.18:8080/view/KivyUI/job/KivyUI%20-%20Alt%20Package%20Window64/lastSuccessfulBuild/artifact/PeachyPrinter_amd64-0.6.614.zip",
 			"install_path": "PeachyPrinter_64",
-			"executable" : "PeachyPrinter_amd64",
+			"executable" : "PeachyPrinter_amd64.exe",
 			"install_type": "zip",
 			"icon": "resources\\peachy.ico"
 		}

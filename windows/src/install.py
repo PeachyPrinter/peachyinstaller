@@ -2,16 +2,19 @@ import sys
 import os
 import logging
 import argparse
+from functools import partial
 from Tkinter import *
 import tkMessageBox
+
 from installer_api import InstallerAPI
 
 
 class Selector(Frame):
     def __init__(self, parent, master, api):
-        Frame.__init__(self, master, padx=50, pady=5)
+        Frame.__init__(self, master, padx=10, pady=5)
         self.parent = parent
         self.install_items = {}
+        self.install_path = StringVar(value="C:\\Program Files\\")
         self._api = api
         self._create_gui()
 
@@ -30,23 +33,33 @@ class Selector(Frame):
                 self.install_items[item.id] = IntVar(value=0)
                 Checkbutton(frame_items, text='add', anchor='w', width=6, variable=self.install_items[item.id], onvalue=1).grid(row=row, column=20)
         frame_items.grid(row=0, column=0, columnspan=2)
+
+        Label(self, anchor=W,  pady=8).grid(row=3, column=0, sticky=W)
+
+        Label(self, anchor=W, text="Install to", pady=8, width=11).grid(row=4, column=0, sticky=W)
+        Entry(self, textvariable=self.install_path, width=85).grid(row=4, column=1, sticky=W)
+
+        Label(self, anchor=W, pady=8).grid(row=5, column=0, sticky=W)
+
         button_cancel = Button(self, text="Cancel", command=self._cancel)
-        button_cancel.grid(row=2, column=0, sticky=W)
+        button_cancel.grid(row=6, column=0, sticky=W)
         button_proceed = Button(self, text="Continue", command=self._continue)
-        button_proceed.grid(row=2, column=1, sticky=E)
+        button_proceed.grid(row=6, column=1, sticky=E)
 
     def _cancel(self):
         sys.exit()
 
     def _continue(self):
         self.parent.install_items = dict([(item, state.get()) for (item, state) in self.install_items.items()])
+        self.parent.install_path = self.install_path.get()
         self.master.event_generate("<<CloseSelect>>")
 
 
 class AddRemove(Frame):
-    def __init__(self, parent, master, api, items):
+    def __init__(self, parent, master, api, items, install_path):
         Frame.__init__(self, master, padx=5, pady=5)
         self.parent = parent
+        self.install_path = install_path
         self._api = api
         self.items = items
         self._create_gui()
@@ -62,14 +75,15 @@ class AddRemove(Frame):
         y_pos = 0
         for (id, addremove) in self.items:
             y_pos += 1
-            name = self._api.get_item(id)
+            application = self._api.get_item(id)
             action = "Add" if addremove == 1 else "Remove"
             colour = "#FFFFFF" if y_pos % 2 == 0 else "#DDDDDD"
             self.app_vars[id] = {
-                'name': StringVar(value=name),
+                'name': StringVar(value=application.name),
                 'status': StringVar(value="Getting Ready"),
                 'action': StringVar(value=action),
-                'complete': False
+                'complete': False,
+                'error': None
                 }
             Label(labelframe, anchor=W, textvariable=self.app_vars[id]['name'], background=colour, pady=8, width=30).grid(row=y_pos, column=0, sticky=W)
             Label(labelframe, anchor=W, textvariable=self.app_vars[id]['action'], background=colour, pady=8, width=10).grid(row=y_pos, column=1, sticky=W)
@@ -82,14 +96,17 @@ class AddRemove(Frame):
             print(item_id)
             install = True if status == 1 else False
             remove = True if status == -1 else False
-            self._api.process(item_id, install=install, remove=remove, status_callback=self.status_callback, complete_callback=self.complete_callback)
+            status_partial = partial(self.status_callback, id=item_id)
+            complete_partial = partial(self.complete_callback, id=item_id)
+            self._api.process(item_id, self.install_path, install=install, remove=remove, status_callback=status_partial, complete_callback=complete_partial)
 
-    def status_callback(self, id, status):
-        print("Status Call")
+    def status_callback(self, status, id=None):
         self.app_vars[id]['status'].set(status)
 
-    def complete_callback(self, id, success):
-        print("Complete call")
+    def complete_callback(self, success, message, id=None):
+        if success == False:
+            self.app_vars[id]['status'].set(message)
+            self.app_vars[id]['error'] = message
         self.app_vars[id]['complete'] = True
 
 
@@ -98,6 +115,7 @@ class InstallerUI(Frame):
     def __init__(self, api, master):
         Frame.__init__(self, master)
         self.install_items = None
+        self.install_path = None
         self._api = api
         self._create_gui()
 
@@ -107,7 +125,7 @@ class InstallerUI(Frame):
         self.master.bind("<<CloseSelect>>", self._close_select, '+')
 
     def _create_add_remove_gui(self, items):
-        self.add_remove = AddRemove(self, self.master, self._api, items)
+        self.add_remove = AddRemove(self, self.master, self._api, items, self.install_path)
         self.add_remove.grid()
 
     def _close_select(self, event):

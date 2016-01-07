@@ -4,6 +4,7 @@ import os
 import sys
 import time
 import cStringIO
+from urllib2 import URLError
 from helpers import TestHelpers
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..',))
@@ -54,6 +55,17 @@ class InstallApplicationTest(unittest.TestCase, TestHelpers):
         time.sleep(self.sleep_time)
         installer.join()
         mock_complete_callback.assert_called_with(False, "Got error 504 accessing {}".format(app.download_location))
+
+
+    def test_run_should_report_failure_if_url_bad(self, mock_urlib2, mock_ZipFile, mock_move, mock_listdir, mock_isdir, mock_create_shortcut):
+        mock_urlib2.urlopen.side_effect = URLError("bad")
+        app = self.get_application()
+        mock_complete_callback = MagicMock()
+        installer = InstallApplication(app, '', complete_callback=mock_complete_callback)
+        installer.start()
+        time.sleep(self.sleep_time)
+        installer.join()
+        mock_complete_callback.assert_called_with(False, "Bad URL".format(app.download_location))
 
     def test_run_should_report_failure_if_cannot_open_file(self, mock_urlib2, mock_ZipFile, mock_move, mock_listdir, mock_isdir, mock_create_shortcut):
         mock_urlib2.urlopen.return_value = self.get_mock_response(code=200)

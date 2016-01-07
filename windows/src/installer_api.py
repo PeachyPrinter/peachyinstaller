@@ -3,26 +3,10 @@ import json
 import os
 
 from application import Application
-
+from application_install import InstallApplication
 import logging
 logger = logging.getLogger('peachy')
 
-
-class InstallerAPIBase(object):
-    def check_version(self):
-        raise NotImplementedError("This is not implemented at this time.")
-
-    def get_items(self):
-        raise NotImplementedError("This is not implemented at this time.")
-
-    def get_item(self, id):
-        raise NotImplementedError("This is not implemented at this time.")
-
-    def process(self, id, install=False, remove=False, status_callback=None, complete_callback=None):
-        raise NotImplementedError("This is not implemented at this time.")
-
-    def initialize(self):
-        raise NotImplementedError("This is not implemented at this time.")
 
 class ConfigException(Exception):
     def __init__(self, error_code, message):
@@ -31,9 +15,8 @@ class ConfigException(Exception):
         self.error_code = error_code
 
 
-class InstallerAPI(InstallerAPIBase):
+class InstallerAPI(object):
     supported_configuration_versions = [0, ]
-
 
     def __init__(self, config_url="https://raw.githubusercontent.com/PeachyPrinter/peachyinstaller/master/config.json"):
         logger.info("Fetching configuration from {}".format(config_url))
@@ -106,3 +89,7 @@ class InstallerAPI(InstallerAPIBase):
 
     def get_item(self, id):
         return [app for app in self._applications if app.id == id][0]
+
+    def process(self, id, base_install_path, install=False, remove=False, status_callback=None, complete_callback=None):
+        if install:
+            InstallApplication(self.get_item(id), base_install_path, status_callback=status_callback, complete_callback=complete_callback).start()
