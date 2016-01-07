@@ -103,12 +103,16 @@ class InstallApplication(threading.Thread):
             raise InstallerException(10505, "Cannot move folders into install folder")
 
     def _create_shortcut(self, installed_path):
-        link = os.path.join(os.getenv('USERPROFILE'), 'Desktop', self._application.name + '.lnk')
-        target_file = os.path.join(installed_path, self._application.executable_path)
-        working_dir = installed_path
-        icon_file = os.path.join(installed_path, self._application.icon)
+        try:
+            link = os.path.join(os.getenv('USERPROFILE'), 'Desktop', self._application.name + '.lnk')
+            target_file = os.path.join(installed_path, self._application.executable_path)
+            working_dir = installed_path
+            icon_file = os.path.join(installed_path, self._application.icon)
 
-        ShortCutter.create_shortcut(link, target_file, working_dir, icon_file)
+            ShortCutter.create_shortcut(link, target_file, working_dir, icon_file)
+        except Exception as ex:
+            logger.error(ex)
+            raise InstallerException(10506, "Creating shortcut failed")
 
     def run(self):
         try:

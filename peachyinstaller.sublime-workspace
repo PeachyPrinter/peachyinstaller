@@ -4,32 +4,132 @@
 		"selected_items":
 		[
 			[
+				"ico",
+				"icon_file"
+			],
+			[
+				"ins",
+				"installed_path"
+			],
+			[
+				"cre",
+				"create_shortcut"
+			],
+			[
+				"Sh",
+				"ShortCutter"
+			],
+			[
+				"ex",
+				"expected_icon"
+			],
+			[
+				"pa",
+				"path"
+			],
+			[
+				"ected",
+				"expected_target_exe"
+			],
+			[
+				"exp",
+				"expected_destination_folder"
+			],
+			[
+				"assert",
+				"assert_called_with"
+			],
+			[
+				"mock_s",
+				"mock_create_shortcut"
+			],
+			[
+				"ass",
+				"assert_called_with	function"
+			],
+			[
+				"base",
+				"base_install_path	param"
+			],
+			[
+				"des",
+				"dest_folder	statement"
+			],
+			[
+				"ap",
+				"_application"
+			],
+			[
+				"b",
+				"base_install_path"
+			],
+			[
+				"retu",
+				"return_value"
+			],
+			[
+				"int",
+				"internal_path	statement"
+			],
+			[
+				"ret",
+				"return_value"
+			],
+			[
+				"mock",
+				"mock_listdir	param"
+			],
+			[
+				"con",
+				"config_url	param"
+			],
+			[
+				"comp",
+				"complete_callback"
+			],
+			[
+				"file",
+				"file_path	param"
+			],
+			[
+				"mo",
+				"mock_zip_handle	statement"
+			],
+			[
+				"zip",
+				"zip_file_handle	withstmt"
+			],
+			[
+				"mock_zip",
+				"mock_zip_handle	statement"
+			],
+			[
+				"e",
+				"expected_source_path"
+			],
+			[
+				"ca",
+				"call_args_list"
+			],
+			[
+				"call",
+				"call_args_list	statement"
+			],
+			[
+				"re",
+				"return_value"
+			],
+			[
+				"z",
+				"zip_file	withstmt"
+			],
+			[
 				"ch",
 				"chunk	statement"
 			],
 			[
-				"ass",
-				"assertEquals	statement"
-			],
-			[
-				"ca",
-				"call_args	statement"
-			],
-			[
-				"mo",
-				"mock_open_file	statement"
-			],
-			[
-				"file",
-				"file_path	statement"
-			],
-			[
-				"ex",
-				"except	keyword"
-			],
-			[
-				"mock",
-				"mock_open	function"
+				"data",
+				"dataString	statement"
 			],
 			[
 				"a",
@@ -80,14 +180,6 @@
 				"get_sample_file_config"
 			],
 			[
-				"ins",
-				"installed_config	param"
-			],
-			[
-				"exp",
-				"expected_app"
-			],
-			[
 				"test",
 				"test_installer_api	statement"
 			],
@@ -114,14 +206,6 @@
 			[
 				"tes",
 				"test_installer_api	statement"
-			],
-			[
-				"ap",
-				"app_name	statement"
-			],
-			[
-				"comp",
-				"company_name	statement"
 			],
 			[
 				"Conf",
@@ -176,10 +260,6 @@
 				"NotImplementedError	class"
 			],
 			[
-				"con",
-				"config"
-			],
-			[
 				"In",
 				"InstallerAPI"
 			],
@@ -195,7 +275,7 @@
 			"file": "windows/src/install.py",
 			"settings":
 			{
-				"buffer_size": 5859,
+				"buffer_size": 7747,
 				"line_ending": "Windows"
 			}
 		},
@@ -203,7 +283,7 @@
 			"file": "windows/src/installer_api.py",
 			"settings":
 			{
-				"buffer_size": 3734,
+				"buffer_size": 3957,
 				"line_ending": "Windows"
 			}
 		},
@@ -211,15 +291,18 @@
 			"file": "windows/src/application.py",
 			"settings":
 			{
-				"buffer_size": 1627,
+				"buffer_size": 1706,
 				"line_ending": "Windows"
 			}
 		},
 		{
+			"contents": "import threading\nimport urllib2\nimport os\nfrom os import listdir\nfrom os.path import isdir\nimport zipfile\nfrom shutil import move\nimport logging\nfrom win32com.client import Dispatch\n\nlogger = logging.getLogger('peachy')\n\nclass ShortCutter(object):\n    @staticmethod\n    def create_shortcut(destination_file, target_exe, working_dir, icon_file, ):\n        shell = Dispatch('WScript.Shell')\n        shortcut = shell.CreateShortCut(destination_file)\n        shortcut.Targetpath = target_exe\n        shortcut.WorkingDirectory = working_dir\n        shortcut.IconLocation = icon_file\n        shortcut.save()\n\n\nclass InstallerException(Exception):\n    def __init__(self, error_code, message):\n        super(InstallerException, self).__init__(message)\n        logger.error(\"{} - {}\".format(error_code, message))\n        self.error_code = error_code\n\n\nclass InstallApplication(threading.Thread):\n    def __init__(self, application, base_install_path, status_callback=None, complete_callback=None):\n        threading.Thread.__init__(self)\n        self._application = application\n        self._base_path = base_install_path\n        self._temp_file_location = os.getenv(\"TEMP\")\n        self._status_callback = status_callback\n        self._complete_callback = complete_callback\n        self.CHUNK_SIZE = 16 * 1024\n        self._report_status(\"Initializing\")\n\n    def _report_status(self, message):\n        logger.info(message)\n        if self._status_callback:\n            self._status_callback(message)\n\n    def _report_complete(self, success, message):\n        logger.info(message)\n        if self._complete_callback:\n            self._complete_callback(success, message)\n\n    def _fetch_zip(self, url):\n        logger.info(\"Downloading from: {}\".format(url))\n        response = urllib2.urlopen(url)\n        if response.getcode() != 200:\n            raise InstallerException(10501, \"Got error {} accessing {}\".format(response.getcode(), url))\n        file_path = os.path.join(self._temp_file_location, url.split('/')[-1])\n        logger.info(\"Saving to: {}\".format(file_path))\n        try:\n            with open(file_path, 'wb') as zip_file:\n                total_read = 0\n                while True:\n                    chunk = response.read(self.CHUNK_SIZE)\n                    if not chunk:\n                        break\n                    total_read += len(chunk)\n                    logger.debug(\"Reading chunk: {}\".format(total_read))\n                    zip_file.write(chunk)\n            return file_path\n        except IOError:\n            raise InstallerException(10502, \"Error creating file: {}\".format(file_path))\n\n    def _unzip_files(self, file_path):\n        destination_folder = os.path.join(self._temp_file_location, self._application.name)\n        logger.info(\"Unzipping {} into {}\".format(file_path, destination_folder))\n        try:\n            with zipfile.ZipFile(file_path, \"r\") as zip_file_handle:\n                zip_file_handle.extractall(destination_folder)\n                return destination_folder\n        except Exception as ex:\n            logger.error(ex.message)\n            raise InstallerException(10503, \"Error unzipping file\")\n\n    def _inner_path(self, unzip_path):\n        paths = [os.path.join(unzip_path, path) for path in listdir(unzip_path) if isdir(os.path.join(unzip_path, path))]\n        if len(paths) > 1:\n            logger.error(\"Zip file expected one but contains the following folders: {}\".format(','.join(paths)))\n            raise InstallerException(10504, \"Zip file contains unexpected layout\")\n        inner_path =  paths[0]\n        logger.info(\"Found folder in zip: {}\".format(inner_path))\n        return inner_path\n\n    def _move_files(self, temp_destination):\n        try:\n            source_folder = self._inner_path(temp_destination)\n            dest_folder = os.path.join(self._base_path, 'Peachy', self._application.relitive_install_path)\n            move(source_folder, dest_folder)\n            return dest_folder\n        except InstallerException:\n            raise\n        except Exception as ex:\n            logger.error(ex)\n            raise InstallerException(10505, \"Cannot move folders into install folder\")\n\n    def _create_shortcut(self, installed_path):\n        try:\n            link = os.path.join(os.getenv('USERPROFILE'), 'Desktop', self._application.name + '.lnk')\n            target_file = os.path.join(installed_path, self._application.executable_path)\n            working_dir = installed_path\n            icon_file = os.path.join(installed_path, self._application.icon)\n\n            ShortCutter.create_shortcut(link, target_file, working_dir, icon_file)\n\n    def run(self):\n        try:\n            self._report_status(\"Downloading\")\n            file_path = self._fetch_zip(self._application.download_location)\n            self._report_status(\"Unpacking\")\n            # temp_destination = os.path.join(self._temp_file_location, self._application.name)\n            temp_destination = self._unzip_files(file_path)\n            self._report_status(\"Installing\")\n            installed_path = self._move_files(temp_destination)\n            self._report_status(\"Creating Shortcuts\")\n            self._create_shortcut(installed_path)\n            self._report_status(\"Finalizing\")\n            self._report_complete(True, \"Success\")\n        except InstallerException as ex:\n            self._report_complete(False, ex.message)\n        except Exception as ex:\n            logger.error(ex)\n            raise\n\n",
 			"file": "windows/src/application_install.py",
+			"file_size": 5565,
+			"file_write_time": 130966691189970373,
 			"settings":
 			{
-				"buffer_size": 1728,
+				"buffer_size": 5467,
 				"line_ending": "Windows"
 			}
 		},
@@ -227,7 +310,23 @@
 			"file": "windows/test/test_application_installer.py",
 			"settings":
 			{
-				"buffer_size": 3484,
+				"buffer_size": 13732,
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"file": "windows/test/test_application.py",
+			"settings":
+			{
+				"buffer_size": 3345,
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"file": "config.json",
+			"settings":
+			{
+				"buffer_size": 317,
 				"line_ending": "Windows"
 			}
 		},
@@ -243,7 +342,7 @@
 			"file": "windows/test/helpers.py",
 			"settings":
 			{
-				"buffer_size": 1238,
+				"buffer_size": 1233,
 				"line_ending": "Windows"
 			}
 		}
@@ -349,6 +448,17 @@
 		"case_sensitive": false,
 		"find_history":
 		[
+			"install_path",
+			"app",
+			", mock_isdir):",
+			"getenv",
+			", mock_move)",
+			", mock_ZipFile",
+			"mock_zipfile",
+			"destination",
+			"(self, mock_urlib2)",
+			"_complete_callback",
+			"_status_callback",
 			"a_file",
 			"make_mock_response",
 			"['id']",
@@ -397,15 +507,15 @@
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 5859,
+						"buffer_size": 7747,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								1636,
-								1636
+								7347,
+								7347
 							]
 						],
 						"settings":
@@ -415,10 +525,10 @@
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 0.0,
+						"translation.y": 360.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 6,
+					"stack_index": 8,
 					"type": "text"
 				},
 				{
@@ -427,15 +537,45 @@
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 3734,
+						"buffer_size": 3957,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								868,
-								698
+								2417,
+								2417
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/Python/Python.tmLanguage",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 1080.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 1,
+					"type": "text"
+				},
+				{
+					"buffer": 2,
+					"file": "windows/src/application.py",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 1706,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								1706,
+								1706
 							]
 						],
 						"settings":
@@ -445,27 +585,27 @@
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": -0.0,
-						"translation.y": 630.0,
+						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
 					"stack_index": 3,
 					"type": "text"
 				},
 				{
-					"buffer": 2,
-					"file": "windows/src/application.py",
+					"buffer": 3,
+					"file": "windows/src/application_install.py",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 1627,
+						"buffer_size": 5467,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								1095,
-								1095
+								4623,
+								4623
 							]
 						],
 						"settings":
@@ -475,38 +615,10 @@
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 0.0,
+						"translation.y": 1395.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 4,
-					"type": "text"
-				},
-				{
-					"buffer": 3,
-					"file": "windows/src/application_install.py",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 1728,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								1214,
-								1214
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/Python/Python.tmLanguage"
-						},
-						"translation.x": 0.0,
-						"translation.y": 135.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 1,
+					"stack_index": 0,
 					"type": "text"
 				}
 			]
@@ -521,15 +633,15 @@
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 3484,
+						"buffer_size": 13732,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								2740,
-								2751
+								13504,
+								13504
 							]
 						],
 						"settings":
@@ -539,14 +651,73 @@
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 675.0,
+						"translation.y": 3461.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 0,
+					"stack_index": 2,
 					"type": "text"
 				},
 				{
 					"buffer": 5,
+					"file": "windows/test/test_application.py",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 3345,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								1415,
+								1415
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/Python/Python.tmLanguage",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": -0.0,
+						"translation.y": 315.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 7,
+					"type": "text"
+				},
+				{
+					"buffer": 6,
+					"file": "config.json",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 317,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								171,
+								183
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/JavaScript/JSON.tmLanguage",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 4,
+					"type": "text"
+				},
+				{
+					"buffer": 7,
 					"file": "windows/test/test_installer_api.py",
 					"semi_transient": false,
 					"settings":
@@ -558,8 +729,8 @@
 						"selection":
 						[
 							[
-								3958,
-								4276
+								3766,
+								3766
 							]
 						],
 						"settings":
@@ -569,27 +740,27 @@
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 1080.0,
+						"translation.y": 1035.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 2,
+					"stack_index": 5,
 					"type": "text"
 				},
 				{
-					"buffer": 6,
+					"buffer": 8,
 					"file": "windows/test/helpers.py",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 1238,
+						"buffer_size": 1233,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								1234,
-								1234
+								988,
+								988
 							]
 						],
 						"settings":
@@ -598,11 +769,11 @@
 							"tab_size": 4,
 							"translate_tabs_to_spaces": true
 						},
-						"translation.x": -0.0,
-						"translation.y": 270.0,
+						"translation.x": 0.0,
+						"translation.y": 22.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 5,
+					"stack_index": 6,
 					"type": "text"
 				}
 			]
@@ -636,7 +807,7 @@
 		"cols":
 		[
 			0.0,
-			0.446327683616,
+			0.5,
 			1.0
 		],
 		"rows":
@@ -667,6 +838,14 @@
 		"last_filter": "",
 		"selected_items":
 		[
+			[
+				"test_a",
+				"windows\\test\\test_application.py"
+			],
+			[
+				"json",
+				"config.json"
+			],
 			[
 				"test",
 				"windows\\test\\test_installer_api.py"
@@ -700,7 +879,7 @@
 		],
 		"width": 0.0
 	},
-	"selected_group": 1,
+	"selected_group": 0,
 	"settings":
 	{
 	},
