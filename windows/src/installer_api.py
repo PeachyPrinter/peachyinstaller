@@ -4,6 +4,9 @@ import os
 
 from application import Application
 
+import logging
+logger = logging.getLogger('peachy')
+
 
 class InstallerAPIBase(object):
     def check_version(self):
@@ -30,9 +33,11 @@ class ConfigException(Exception):
 class InstallerAPI(InstallerAPIBase):
     supported_configuration_versions = [0, ]
 
+
     def __init__(self, config_url="https://raw.githubusercontent.com/PeachyPrinter/peachyinstaller/master/config.json"):
         self._config_url = config_url
         self._applications = []
+        logger.info("Starting API")
 
     def _check_web_config(self, config):
         if "version" in config:
