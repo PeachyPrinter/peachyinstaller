@@ -174,11 +174,46 @@ class InstallApplicationTest(unittest.TestCase, TestHelpers):
             mock_listdir.assert_called_with(os.path.join(os.getenv("TEMP"), app.name))
             mock_move.assert_called_with(expected_source_folder, expected_destination_folder)
 
-    # def test_run_should_raise_exception_when_zip_file_has_multipule_folders(self, mock_urlib2, mock_ZipFile ,mock_move, mock_listdir, mock_isdir):
-    #     pass
+    def test_run_should_raise_exception_when_zip_file_has_multipule_folders(self, mock_urlib2, mock_ZipFile ,mock_move, mock_listdir, mock_isdir):
+        app = self.get_application()
+        base_folder = 'c:\\some\\folder'
+        internal_path = 'somerthing-1234.2314'
+        mock_listdir.return_value = [internal_path, 'UnexpectedPath']
+        mock_isdir.return_value = True
 
-    # def test_run_should_raise_exception_when_move_fails(self, mock_urlib2, mock_ZipFile, mock_move, mock_listdir, mock_isdir):
-    #     pass
+        mock_urlib2.urlopen.return_value = self.get_mock_response(code=200)
+        mock_complete_callback = MagicMock()
+
+        mock_open_file = mock_open()
+        with patch('application_install.open', mock_open_file, create=True):
+            mock_file = mock_open_file.return_value
+            mock_open_file.return_value = mock_file
+            installer = InstallApplication(app, base_folder, complete_callback=mock_complete_callback)
+            installer.start()
+            time.sleep(self.sleep_time)
+
+            mock_complete_callback.assert_called_with(False, "Zip file contains unexpected layout")
+
+    def test_run_should_raise_exception_when_move_fails(self, mock_urlib2, mock_ZipFile, mock_move, mock_listdir, mock_isdir):
+        app = self.get_application()
+        base_folder = 'c:\\some\\folder'
+        internal_path = 'somerthing-1234.2314'
+        mock_listdir.return_value = [internal_path]
+        mock_isdir.return_value = True
+        mock_move.side_effect = IOError("Bad stuff")
+
+        mock_urlib2.urlopen.return_value = self.get_mock_response(code=200)
+        mock_complete_callback = MagicMock()
+
+        mock_open_file = mock_open()
+        with patch('application_install.open', mock_open_file, create=True):
+            mock_file = mock_open_file.return_value
+            mock_open_file.return_value = mock_file
+            installer = InstallApplication(app, base_folder, complete_callback=mock_complete_callback)
+            installer.start()
+            time.sleep(self.sleep_time)
+
+            mock_complete_callback.assert_called_with(False, "Cannot move folders into install folder")
 
 
 if __name__ == '__main__':

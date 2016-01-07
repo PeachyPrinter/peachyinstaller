@@ -67,20 +67,27 @@ class InstallApplication(threading.Thread):
                 return destination_folder
         except Exception as ex:
             logger.error(ex.message)
-            raise InstallerException(10502, "Error unzipping file")
+            raise InstallerException(10503, "Error unzipping file")
 
     def _inner_path(self, unzip_path):
         paths = [os.path.join(unzip_path, path) for path in listdir(unzip_path) if isdir(os.path.join(unzip_path, path))]
         if len(paths) > 1:
-            pass
+            logger.error("Zip file expected one but contains the following folders: {}".format(','.join(paths)))
+            raise InstallerException(10504, "Zip file contains unexpected layout")
         inner_path =  paths[0]
         logger.info("Found folder in zip: {}".format(inner_path))
         return inner_path
 
     def _move_files(self, temp_destination):
-        source_folder = self._inner_path(temp_destination)
-        dest_folder = os.path.join(self._base_path, 'Peachy', self._application.relitive_install_path)
-        move(source_folder, dest_folder)
+        try:
+            source_folder = self._inner_path(temp_destination)
+            dest_folder = os.path.join(self._base_path, 'Peachy', self._application.relitive_install_path)
+            move(source_folder, dest_folder)
+        except InstallerException:
+            raise
+        except Exception as ex:
+            logger.error(ex)
+            raise InstallerException(10505, "Cannot move folders into install folder")
 
     def run(self):
         try:
