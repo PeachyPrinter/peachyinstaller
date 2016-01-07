@@ -8,6 +8,7 @@ class Application(object):
         self.available_version = web_config['version']
         self.download_location = web_config['location']
         self.relitive_install_path = web_config['install_path']
+        self.icon = web_config['icon']
         self.executable_path = web_config['executable']
         if installed_config:
             self.full_installed_path = installed_config['installed_path']
@@ -35,5 +36,6 @@ class Application(object):
             self.relitive_install_path == other.relitive_install_path and
             self.executable_path == other.executable_path and
             self.full_installed_path == other.full_installed_path and
+            self.icon == other.icon and
             self.current_version == other.current_version
             )

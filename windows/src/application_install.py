@@ -6,7 +6,19 @@ from os.path import isdir
 import zipfile
 from shutil import move
 import logging
+from win32com.client import Dispatch
+
 logger = logging.getLogger('peachy')
+
+class ShortCutter(object):
+    @staticmethod
+    def create_shortcut(destination_file, target_exe, working_dir, icon_file, ):
+        shell = Dispatch('WScript.Shell')
+        shortcut = shell.CreateShortCut(destination_file)
+        shortcut.Targetpath = target_exe
+        shortcut.WorkingDirectory = working_dir
+        shortcut.IconLocation = icon_file
+        shortcut.save()
 
 
 class InstallerException(Exception):
@@ -83,11 +95,20 @@ class InstallApplication(threading.Thread):
             source_folder = self._inner_path(temp_destination)
             dest_folder = os.path.join(self._base_path, 'Peachy', self._application.relitive_install_path)
             move(source_folder, dest_folder)
+            return dest_folder
         except InstallerException:
             raise
         except Exception as ex:
             logger.error(ex)
             raise InstallerException(10505, "Cannot move folders into install folder")
+
+    def _create_shortcut(self, installed_path):
+        link = os.path.join(os.getenv('USERPROFILE'), 'Desktop', self._application.name + '.lnk')
+        target_file = os.path.join(installed_path, self._application.executable_path)
+        working_dir = installed_path
+        icon_file = os.path.join(installed_path, self._application.icon)
+
+        ShortCutter.create_shortcut(link, target_file, working_dir, icon_file)
 
     def run(self):
         try:
@@ -97,8 +118,9 @@ class InstallApplication(threading.Thread):
             # temp_destination = os.path.join(self._temp_file_location, self._application.name)
             temp_destination = self._unzip_files(file_path)
             self._report_status("Installing")
-            self._move_files(temp_destination)
+            installed_path = self._move_files(temp_destination)
             self._report_status("Creating Shortcuts")
+            self._create_shortcut(installed_path)
             self._report_status("Finalizing")
             self._report_complete(True, "Success")
         except InstallerException as ex:

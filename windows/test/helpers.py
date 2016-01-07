@@ -19,7 +19,7 @@ class TestHelpers(object):
             "install_path": "bb",
             "executable": "cc.exe",
             "install_type": "zip",
-            "icon_path": "resources\\icon.ico"
+            "icon": "resources\\icon.ico"
         }
 
     def get_sample_web_config(self):

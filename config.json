@@ -11,7 +11,7 @@
 			"install_path": "PeachyPrinter_64",
 			"executable" : "PeachyPrinter_amd64",
 			"install_type": "zip",
-			"icon_path": "resources\\peachy.ico"
+			"icon": "resources\\peachy.ico"
 		}
 	]
 }
