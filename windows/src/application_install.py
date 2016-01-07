@@ -1,8 +1,10 @@
 import threading
 import urllib2
 import os
+from os import listdir
+from os.path import isdir
 import zipfile
-
+from shutil import move
 import logging
 logger = logging.getLogger('peachy')
 
@@ -18,6 +20,7 @@ class InstallApplication(threading.Thread):
     def __init__(self, application, base_install_path, status_callback=None, complete_callback=None):
         threading.Thread.__init__(self)
         self._application = application
+        self._base_path = base_install_path
         self._temp_file_location = os.getenv("TEMP")
         self._status_callback = status_callback
         self._complete_callback = complete_callback
@@ -55,24 +58,39 @@ class InstallApplication(threading.Thread):
         except IOError:
             raise InstallerException(10502, "Error creating file: {}".format(file_path))
 
-    def _unzip_files(self, file_path, destination):
-        logger.info("Unzipping {} into {}".format(file_path, destination))
+    def _unzip_files(self, file_path):
+        destination_folder = os.path.join(self._temp_file_location, self._application.name)
+        logger.info("Unzipping {} into {}".format(file_path, destination_folder))
         try:
             with zipfile.ZipFile(file_path, "r") as zip_file_handle:
-                zip_file_handle.extractall(destination)
-                return destination
+                zip_file_handle.extractall(destination_folder)
+                return destination_folder
         except Exception as ex:
             logger.error(ex.message)
             raise InstallerException(10502, "Error unzipping file")
+
+    def _inner_path(self, unzip_path):
+        paths = [os.path.join(unzip_path, path) for path in listdir(unzip_path) if isdir(os.path.join(unzip_path, path))]
+        if len(paths) > 1:
+            pass
+        inner_path =  paths[0]
+        logger.info("Found folder in zip: {}".format(inner_path))
+        return inner_path
+
+    def _move_files(self, temp_destination):
+        source_folder = self._inner_path(temp_destination)
+        dest_folder = os.path.join(self._base_path, 'Peachy', self._application.relitive_install_path)
+        move(source_folder, dest_folder)
 
     def run(self):
         try:
             self._report_status("Downloading")
             file_path = self._fetch_zip(self._application.download_location)
             self._report_status("Unpacking")
-            temp_destination = os.path.join(self._temp_file_location, self._application.name)
-            temp_destination = self._unzip_files(file_path, temp_destination)
+            # temp_destination = os.path.join(self._temp_file_location, self._application.name)
+            temp_destination = self._unzip_files(file_path)
             self._report_status("Installing")
+            self._move_files(temp_destination)
             self._report_status("Creating Shortcuts")
             self._report_status("Finalizing")
             self._report_complete(True, "Success")

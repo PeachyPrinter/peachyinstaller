@@ -27,6 +27,7 @@ class InstallerAPIBase(object):
 class ConfigException(Exception):
     def __init__(self, error_code, message):
         super(ConfigException, self).__init__(message)
+        logger.error("{} - {}".format(error_code, message))
         self.error_code = error_code
 
 
@@ -35,6 +36,7 @@ class InstallerAPI(InstallerAPIBase):
 
 
     def __init__(self, config_url="https://raw.githubusercontent.com/PeachyPrinter/peachyinstaller/master/config.json"):
+        logger.info("Fetching configuration from {}".format(config_url))
         self._config_url = config_url
         self._applications = []
         logger.info("Starting API")
