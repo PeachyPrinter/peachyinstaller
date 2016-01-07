@@ -1,5 +1,6 @@
 import sys
 import os
+from win32com.shell import shell
 import logging
 import argparse
 from functools import partial
@@ -189,6 +190,13 @@ if __name__ == '__main__':
     parser.add_argument('-l', '--log',     dest='loglevel', action='store',      required=False, default="INFO", help="Enter the loglevel [DEBUG|INFO|WARNING|ERROR] default: WARNING")
     parser.add_argument('-t', '--console', dest='console',  action='store_true', required=False, help="Logs to console not file")
     args, unknown = parser.parse_known_args()
+
+    ASADMIN = 'asadmin'
+    if sys.argv[-1] != ASADMIN:
+        script = os.path.abspath(sys.argv[0])
+        params = ' '.join([script] + sys.argv[1:] + [ASADMIN])
+        shell.ShellExecuteEx(lpVerb='runas', lpFile=sys.executable, lpParameters=params)
+        sys.exit(0)
 
     setup_logging(args)
 

@@ -56,7 +56,6 @@ class InstallApplicationTest(unittest.TestCase, TestHelpers):
         installer.join()
         mock_complete_callback.assert_called_with(False, "Got error 504 accessing {}".format(app.download_location))
 
-
     def test_run_should_report_failure_if_url_bad(self, mock_urlib2, mock_ZipFile, mock_move, mock_listdir, mock_isdir, mock_create_shortcut):
         mock_urlib2.urlopen.side_effect = URLError("bad")
         app = self.get_application()
@@ -188,7 +187,7 @@ class InstallApplicationTest(unittest.TestCase, TestHelpers):
             mock_listdir.assert_called_with(os.path.join(os.getenv("TEMP"), app.name))
             mock_move.assert_called_with(expected_source_folder, expected_destination_folder)
 
-    def test_run_should_raise_exception_when_zip_file_has_multipule_folders(self, mock_urlib2, mock_ZipFile ,mock_move, mock_listdir, mock_isdir, mock_create_shortcut):
+    def test_run_should_raise_exception_when_zip_file_has_multipule_folders(self, mock_urlib2, mock_ZipFile, mock_move, mock_listdir, mock_isdir, mock_create_shortcut):
         app = self.get_application()
         base_folder = 'c:\\some\\folder'
         internal_path = 'somerthing-1234.2314'
@@ -270,7 +269,6 @@ class InstallApplicationTest(unittest.TestCase, TestHelpers):
             time.sleep(self.sleep_time)
 
             mock_complete_callback.assert_called_with(False, "Creating shortcut failed")
-
 
 
 if __name__ == '__main__':

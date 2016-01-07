@@ -144,9 +144,9 @@ class InstallerAPITest(unittest.TestCase, TestHelpers):
 
         result = test_installer_api.initialize()
         self.assertTrue(result[0], result)
-        test_installer_api.process(expected_app.id, install=True, status_callback='status_callback', complete_callback='complete_callback')
+        test_installer_api.process(expected_app.id, 'base_folder', install=True, status_callback='status_callback', complete_callback='complete_callback')
 
-        mock_InstallApplication.assert_called_with(expected_app, status_callback='status_callback', complete_callback='complete_callback')
+        mock_InstallApplication.assert_called_with(expected_app, 'base_folder', status_callback='status_callback', complete_callback='complete_callback')
         mock_InstallApplication.return_value.start.assert_called_with()
 
     @patch('installer_api.InstallApplication')
@@ -158,7 +158,7 @@ class InstallerAPITest(unittest.TestCase, TestHelpers):
 
         result = test_installer_api.initialize()
         self.assertTrue(result[0], result)
-        test_installer_api.process(expected_app.id, install=False, status_callback='status_callback', complete_callback='complete_callback')
+        test_installer_api.process(expected_app.id, 'base_folder', install=False, status_callback='status_callback', complete_callback='complete_callback')
 
         mock_InstallApplication.assert_not_called()
 

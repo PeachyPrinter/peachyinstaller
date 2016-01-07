@@ -7,8 +7,10 @@ import zipfile
 from shutil import move
 import logging
 from win32com.client import Dispatch
+import pythoncom
 
 logger = logging.getLogger('peachy')
+
 
 class ShortCutter(object):
     @staticmethod
@@ -91,7 +93,7 @@ class InstallApplication(threading.Thread):
         if len(paths) > 1:
             logger.error("Zip file expected one but contains the following folders: {}".format(','.join(paths)))
             raise InstallerException(10504, "Zip file contains unexpected layout")
-        inner_path =  paths[0]
+        inner_path = paths[0]
         logger.info("Found folder in zip: {}".format(inner_path))
         return inner_path
 
@@ -121,6 +123,7 @@ class InstallApplication(threading.Thread):
 
     def run(self):
         try:
+            pythoncom.CoInitialize()
             self._report_status("Downloading")
             file_path = self._fetch_zip(self._application.download_location)
             self._report_status("Unpacking")
@@ -137,4 +140,3 @@ class InstallApplication(threading.Thread):
         except Exception as ex:
             logger.error(ex)
             raise
-
