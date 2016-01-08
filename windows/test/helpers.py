@@ -39,4 +39,4 @@ class TestHelpers(object):
         return '{"version": 0, "applications":[%s]}' % json.dumps(self.get_sample_installed_config())
 
     def get_application(self):
-        return Application(self.get_sample_application_config())
+        return Application.from_configs(self.get_sample_application_config())
