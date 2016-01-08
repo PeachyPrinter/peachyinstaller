@@ -16,19 +16,19 @@ class ApplicationTest(unittest.TestCase, TestHelpers):
         file_config['id'] = 234
         web_config = self.get_sample_installed_config()
         with self.assertRaises(Exception):
-            Application(web_config, file_config)
+            Application.from_configs(web_config, file_config)
 
     def test_uses_web_config_name_if_name_do_not_match(self):
         file_config = self.get_sample_installed_config()
         file_config['name'] = 'Bad Wolf'
         web_config = self.get_sample_application_config()
-        app = Application(web_config, file_config)
+        app = Application.from_configs(web_config, file_config)
         self.assertEquals(web_config['name']['en-us'], app.name)
 
     def test_has_correct_fields(self):
         installed_config = self.get_sample_installed_config()
         web_config = self.get_sample_application_config()
-        app = Application(web_config, installed_config)
+        app = Application.from_configs(web_config, installed_config)
 
         self.assertEquals(web_config['id'], app.id)
         self.assertEquals(web_config['name']['en-us'], app.name)
@@ -42,13 +42,13 @@ class ApplicationTest(unittest.TestCase, TestHelpers):
     def test_two_identical_applications_are_equal(self):
         installed_config = self.get_sample_installed_config()
         web_config = self.get_sample_application_config()
-        app1 = Application(web_config, installed_config)
-        app2 = Application(web_config, installed_config)
+        app1 = Application.from_configs(web_config, installed_config)
+        app2 = Application.from_configs(web_config, installed_config)
         self.assertEquals(app1, app2)
 
     def test_actions_should_be_install_if_no_existing_version(self):
         web_config = self.get_sample_application_config()
-        app = Application(web_config)
+        app = Application.from_configs(web_config)
 
         self.assertEquals(1, len(app.actions))
         self.assertEquals('install', app.actions[0])
@@ -58,7 +58,7 @@ class ApplicationTest(unittest.TestCase, TestHelpers):
         web_config = self.get_sample_application_config()
         installed_config['version'] = '2.3.4'
         web_config['version'] = '2.3.4'
-        app = Application(web_config, installed_config)
+        app = Application.from_configs(web_config, installed_config)
 
         self.assertEquals(1, len(app.actions))
         self.assertEquals('remove', app.actions[0])
@@ -68,7 +68,7 @@ class ApplicationTest(unittest.TestCase, TestHelpers):
         web_config = self.get_sample_application_config()
         installed_config['version'] = '2.3.4'
         web_config['version'] = '2.4.4'
-        app = Application(web_config, installed_config)
+        app = Application.from_configs(web_config, installed_config)
         self.assertEquals(2, len(app.actions))
         self.assertTrue('remove' in app.actions)
         self.assertTrue('upgrade' in app.actions)

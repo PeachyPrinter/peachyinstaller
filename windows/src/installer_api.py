@@ -77,9 +77,9 @@ class InstallerAPI(object):
             for web_app in web_config['applications']:
                 if web_app['id'] in file_config_ids:
                     file_app = [app for app in file_config['applications'] if app['id'] == web_app['id']][0]
-                    self._applications.append(Application(web_app, file_app))
+                    self._applications.append(Application.from_configs(web_app, file_app))
                 else:
-                    self._applications.append(Application(web_app))
+                    self._applications.append(Application.from_configs(web_app))
         except ConfigException as cfgex:
             return (False, cfgex.error_code, cfgex.message)
         return (True, "0", "Success")

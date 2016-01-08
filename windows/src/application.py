@@ -1,21 +1,43 @@
 
 class Application(object):
-    def __init__(self, web_config, installed_config=None):
+    def __init__(self,
+                 id,
+                 name,
+                 available_version=None,
+                 download_location=None,
+                 relitive_install_path=None,
+                 executable_path=None,
+                 full_installed_path=None,
+                 icon=None,
+                 current_version=None):
+        self.id = id
+        self.name = name
+        self.available_version = available_version
+        self.download_location = download_location
+        self.relitive_install_path = relitive_install_path
+        self.executable_path = executable_path
+        self.full_installed_path = full_installed_path
+        self.icon = icon
+        self.current_version = current_version
+
+    @classmethod
+    def from_configs(cls, web_config, installed_config=None):
         if installed_config and installed_config['id'] != web_config['id']:
             raise Exception("Unexpected error processing config")
-        self.id = web_config['id']
-        self.name = web_config['name']['en-us']
-        self.available_version = web_config['version']
-        self.download_location = web_config['location']
-        self.relitive_install_path = web_config['install_path']
-        self.icon = web_config['icon']
-        self.executable_path = web_config['executable']
+        id = web_config['id']
+        name = web_config['name']['en-us']
+        available_version = web_config['version']
+        download_location = web_config['location']
+        relitive_install_path = web_config['install_path']
+        icon = web_config['icon']
+        executable_path = web_config['executable']
         if installed_config:
-            self.full_installed_path = installed_config['installed_path']
-            self.current_version = installed_config['version']
+            full_installed_path = installed_config['installed_path']
+            current_version = installed_config['version']
         else:
-            self.full_installed_path = None
-            self.current_version = None
+            full_installed_path = None
+            current_version = None
+        return cls(id, name, available_version, download_location, relitive_install_path, executable_path, full_installed_path, icon, current_version)
 
     @property
     def actions(self):
