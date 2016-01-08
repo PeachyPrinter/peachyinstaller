@@ -36,7 +36,8 @@ class ApplicationTest(unittest.TestCase, TestHelpers):
         self.assertEquals(web_config['version'], app.available_version)
         self.assertEquals(web_config['location'], app.download_location)
         self.assertEquals(web_config['install_path'], app.relitive_install_path)
-        self.assertEquals(installed_config['installed_path'], app.full_installed_path)
+        self.assertEquals(installed_config['installed_path'], app.installed_path)
+        self.assertEquals(installed_config['shortcut_path'], app.shortcut_path)
         self.assertEquals(web_config['executable'], app.executable_path)
 
     def test_two_identical_applications_are_equal(self):

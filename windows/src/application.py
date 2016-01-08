@@ -7,18 +7,20 @@ class Application(object):
                  download_location=None,
                  relitive_install_path=None,
                  executable_path=None,
-                 full_installed_path=None,
+                 installed_path=None,
                  icon=None,
-                 current_version=None):
+                 current_version=None,
+                 shortcut_path=None):
         self.id = id
         self.name = name
         self.available_version = available_version
         self.download_location = download_location
         self.relitive_install_path = relitive_install_path
         self.executable_path = executable_path
-        self.full_installed_path = full_installed_path
+        self.installed_path = installed_path
         self.icon = icon
         self.current_version = current_version
+        self.shortcut_path = shortcut_path
 
     @classmethod
     def from_configs(cls, web_config, installed_config=None):
@@ -32,12 +34,14 @@ class Application(object):
         icon = web_config['icon']
         executable_path = web_config['executable']
         if installed_config:
-            full_installed_path = installed_config['installed_path']
+            installed_path = installed_config['installed_path']
             current_version = installed_config['version']
+            shortcut_path = installed_config['shortcut_path']
         else:
-            full_installed_path = None
+            installed_path = None
             current_version = None
-        return cls(id, name, available_version, download_location, relitive_install_path, executable_path, full_installed_path, icon, current_version)
+            shortcut_path = None
+        return cls(id, name, available_version, download_location, relitive_install_path, executable_path, installed_path, icon, current_version, shortcut_path)
 
     @property
     def actions(self):
@@ -57,7 +61,8 @@ class Application(object):
             self.download_location == other.download_location and
             self.relitive_install_path == other.relitive_install_path and
             self.executable_path == other.executable_path and
-            self.full_installed_path == other.full_installed_path and
+            self.installed_path == other.installed_path and
             self.icon == other.icon and
-            self.current_version == other.current_version
+            self.current_version == other.current_version and
+            self.shortcut_path == other.shortcut_path
             )

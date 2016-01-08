@@ -33,6 +33,7 @@ class TestHelpers(object):
                 },
             "version": "0.1.1",
             "installed_path": "bb",
+            "shortcut_path": "dd"
     }
 
     def get_sample_file_config(self):

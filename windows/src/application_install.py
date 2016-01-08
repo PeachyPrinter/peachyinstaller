@@ -9,6 +9,8 @@ import logging
 from win32com.client import Dispatch
 import pythoncom
 
+
+from application import Application
 logger = logging.getLogger('peachy')
 
 
@@ -40,6 +42,7 @@ class InstallApplication(threading.Thread):
         self._complete_callback = complete_callback
         self.CHUNK_SIZE = 16 * 1024
         self._report_status("Initializing")
+        self.complete = False
 
     def _report_status(self, message):
         logger.info(message)
@@ -117,6 +120,7 @@ class InstallApplication(threading.Thread):
             icon_file = os.path.join(installed_path, self._application.icon)
 
             ShortCutter.create_shortcut(link, target_file, working_dir, icon_file)
+            return link
         except Exception as ex:
             logger.error(ex)
             raise InstallerException(10506, "Creating shortcut failed")
@@ -132,9 +136,12 @@ class InstallApplication(threading.Thread):
             self._report_status("Installing")
             installed_path = self._move_files(temp_destination)
             self._report_status("Creating Shortcuts")
-            self._create_shortcut(installed_path)
+            shortcut_path = self._create_shortcut(installed_path)
             self._report_status("Finalizing")
             self._report_complete(True, "Success")
+            self.application = Application(self._application.id, self._application.name, installed_path=installed_path, shortcut_path=shortcut_path, current_version=self._application.available_version)
+            self.complete = True
+
         except InstallerException as ex:
             self._report_complete(False, ex.message)
         except Exception as ex:

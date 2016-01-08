@@ -11,6 +11,7 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..',))
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', 'src'))
 
 from application_install import InstallApplication
+from application import Application
 from mock import patch, MagicMock, mock_open
 
 
@@ -269,6 +270,34 @@ class InstallApplicationTest(unittest.TestCase, TestHelpers):
             time.sleep(self.sleep_time)
 
             mock_complete_callback.assert_called_with(False, "Creating shortcut failed")
+
+    def test_run_on_success_should_create_an_application(self, mock_urlib2, mock_ZipFile, mock_move, mock_listdir, mock_isdir, mock_create_shortcut):
+        app = self.get_application()
+        base_folder = 'c:\\some\\folder'
+        internal_path = 'somerthing-1234.2314'
+        mock_listdir.return_value = [internal_path]
+        mock_isdir.return_value = True
+        mock_urlib2.urlopen.return_value = self.get_mock_response(code=200)
+        mock_open_file = mock_open()
+
+        expected_destination_folder = os.path.join(base_folder, 'Peachy', app.relitive_install_path)
+        shortcut = os.path.join(os.getenv('USERPROFILE'), 'Desktop', app.name + '.lnk')
+
+        expected_application = Application(app.id, app.name, installed_path=expected_destination_folder, shortcut_path=shortcut, current_version=app.available_version)
+
+        with patch('application_install.open', mock_open_file, create=True):
+            mock_file = mock_open_file.return_value
+            mock_open_file.return_value = mock_file
+            installer = InstallApplication(app, base_folder)
+            installer.start()
+            time.sleep(self.sleep_time)
+
+            self.assertTrue(installer.complete)
+            self.assertEquals(expected_application.id, installer.application.id)
+            self.assertEquals(expected_application.name, installer.application.name)
+            self.assertEquals(expected_application.installed_path, installer.application.installed_path)
+            self.assertEquals(expected_application.current_version, installer.application.current_version)
+            self.assertEquals(expected_application.shortcut_path, installer.application.shortcut_path)
 
 
 if __name__ == '__main__':
