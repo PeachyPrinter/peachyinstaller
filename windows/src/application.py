@@ -1,3 +1,4 @@
+import json
 
 class Application(object):
     def __init__(self,
@@ -42,6 +43,26 @@ class Application(object):
             current_version = None
             shortcut_path = None
         return cls(id, name, available_version, download_location, relitive_install_path, executable_path, installed_path, icon, current_version, shortcut_path)
+
+    def get_json(self):
+        this = {
+        "id": self.id,
+        "name": {
+                "en-us": self.name,
+                },
+        "available_version": self.available_version,
+        "download_location": self.download_location,
+        "relitive_install_path": self.relitive_install_path,
+        "executable_path": self.executable_path,
+        "installed_path": self.installed_path,
+        "icon": self.icon,
+        "current_version": self.current_version,
+        "shortcut_path": self.shortcut_path,
+        }
+        for (key, value) in this.items():
+            if value is None:
+                del this[key]
+        return json.dumps(this)
 
     @property
     def actions(self):

@@ -124,8 +124,16 @@ class InstallApplication(threading.Thread):
             logger.error(ex)
             raise InstallerException(10506, "Creating shortcut failed")
 
+    def _get_file_config_path(self, app_id):
+        profile = os.getenv('USERPROFILE')
+        company_name = "Peachy"
+        app_name = 'PeachyInstaller'
+        return os.path.join(profile, 'AppData', 'Local', company_name, app_name, 'app-{}.json'.format(app_id))
+
     def _save_install_config(self, application):
-        pass
+        path = self._get_file_config_path(application.id)
+        with open(path, 'w') as install_file:
+            install_file.write(application.get_json())
 
     def run(self):
         try:
@@ -140,7 +148,8 @@ class InstallApplication(threading.Thread):
             shortcut_path = self._create_shortcut(installed_path)
             self._report_status("Finalizing")
             self._report_complete(True, "Success")
-            self.application = Application(self._application.id, self._application.name, installed_path=installed_path, shortcut_path=shortcut_path, current_version=self._application.available_version)
+            application = Application(self._application.id, self._application.name, installed_path=installed_path, shortcut_path=shortcut_path, current_version=self._application.available_version)
+            self._save_install_config(application)
         except InstallerException as ex:
             self._report_complete(False, ex.message)
         except Exception as ex:

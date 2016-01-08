@@ -271,7 +271,30 @@ class InstallApplicationTest(unittest.TestCase, TestHelpers):
 
             mock_complete_callback.assert_called_with(False, "Creating shortcut failed")
 
+    def test_run_should_write_application_install_file_to_correct_path(self, mock_urlib2, mock_ZipFile, mock_move, mock_listdir, mock_isdir, mock_create_shortcut):
+        app = self.get_application()
+        expected_path = os.path.join(os.getenv('USERPROFILE'), 'AppData', 'Local', 'Peachy', 'PeachyInstaller', 'app-{}.json'.format(app.id))
+
+        base_folder = 'c:\\some\\folder'
+        internal_path = 'somerthing-1234.2314'
+        mock_listdir.return_value = [internal_path]
+        mock_isdir.return_value = True
+        mock_urlib2.urlopen.return_value = self.get_mock_response(code=200)
+        mock_open_file = mock_open()
+        mock_create_shortcut.return_value = "fork"
+        mock_complete_callback = MagicMock()
+        with patch('application_install.open', mock_open_file, create=True):
+            mock_file = mock_open_file.return_value
+            mock_open_file.return_value = mock_file
+            installer = InstallApplication(app, base_folder, complete_callback=mock_complete_callback)
+            installer.start()
+            time.sleep(self.sleep_time)
+
+            mock_open_file.assert_called_with(expected_path, 'w')
+
 
 if __name__ == '__main__':
     logging.basicConfig(format='%(asctime)s %(levelname)s: %(message)s', level='INFO')
+
+
     unittest.main()

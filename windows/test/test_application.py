@@ -1,6 +1,7 @@
 import unittest
 import os
 import sys
+import json
 from helpers import TestHelpers
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..',))
@@ -73,6 +74,62 @@ class ApplicationTest(unittest.TestCase, TestHelpers):
         self.assertEquals(2, len(app.actions))
         self.assertTrue('remove' in app.actions)
         self.assertTrue('upgrade' in app.actions)
+
+    def test_get_json_should_return_expected_json(self):
+        id = 66
+        name = "name"
+        available_version = "available_version"
+        download_location = "download_location"
+        relitive_install_path = "relitive_install_path"
+        executable_path = "executable_path"
+        installed_path = "installed_path"
+        icon = "icon"
+        current_version = "current_version"
+        shortcut_path = "shortcut_path"
+        app = Application(id, name, available_version, download_location, relitive_install_path, executable_path, installed_path, icon, current_version, shortcut_path)
+        expected_json = {
+                        "id": 66,
+                        "name": {
+                            "en-us": "name",
+                        },
+                        "available_version": "available_version",
+                        "download_location": "download_location",
+                        "relitive_install_path": "relitive_install_path",
+                        "executable_path": "executable_path",
+                        "installed_path": "installed_path",
+                        "icon": "icon",
+                        "current_version": "current_version",
+                        "shortcut_path": "shortcut_path",
+                        }
+
+        actual = json.loads(app.get_json())
+        self.assertEquals(expected_json, actual)
+
+    def test_get_json_should_return_expected_json_when_some_fields_are_none(self):
+        id = 66
+        name = "name"
+        available_version = "available_version"
+        download_location = "download_location"
+        relitive_install_path = "relitive_install_path"
+        installed_path = "installed_path"
+        icon = "icon"
+        shortcut_path = "shortcut_path"
+        app = Application(id, name, available_version, download_location, relitive_install_path, None, installed_path, icon, None, shortcut_path)
+        expected_json = {
+                        "id": 66,
+                        "name": {
+                            "en-us": "name",
+                        },
+                        "available_version": "available_version",
+                        "download_location": "download_location",
+                        "relitive_install_path": "relitive_install_path",
+                        "installed_path": "installed_path",
+                        "icon": "icon",
+                        "shortcut_path": "shortcut_path",
+                        }
+
+        actual = json.loads(app.get_json())
+        self.assertEquals(expected_json, actual)
 
 
 if __name__ == '__main__':
