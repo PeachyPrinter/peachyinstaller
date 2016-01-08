@@ -1,6 +1,7 @@
 import unittest
 import os
 import sys
+import logging
 import json
 from mock import patch, MagicMock, mock_open
 from helpers import TestHelpers
@@ -109,11 +110,10 @@ class InstallerAPITest(unittest.TestCase, TestHelpers):
     def test_initialize_should_create_correct_application(self, mock_urllib2, mock_exists):
         mock_exists.return_value = True
         mock_urllib2.urlopen.return_value = self.make_mock_response(code=200, data=self.get_sample_web_config())
-        mock_open_file = mock_open(read_data=self.get_sample_file_config())
+        mock_open_file = mock_open(read_data=json.dumps(self.get_sample_installed_config()))
         expected_app = Application.from_configs(self.get_sample_application_config(), self.get_sample_installed_config())
 
         with patch('installer_api.open', mock_open_file, create=True):
-            mock_open_file.read = IOError("Mock Error")
             test_installer_api = InstallerAPI()
 
             result = test_installer_api.initialize()
@@ -163,5 +163,6 @@ class InstallerAPITest(unittest.TestCase, TestHelpers):
         mock_InstallApplication.assert_not_called()
 
 if __name__ == '__main__':
+    logging.basicConfig(format='%(asctime)s %(levelname)s: %(message)s', level='INFO')
     unittest.main()
 

@@ -42,7 +42,6 @@ class InstallApplication(threading.Thread):
         self._complete_callback = complete_callback
         self.CHUNK_SIZE = 16 * 1024
         self._report_status("Initializing")
-        self.complete = False
 
     def _report_status(self, message):
         logger.info(message)
@@ -125,13 +124,15 @@ class InstallApplication(threading.Thread):
             logger.error(ex)
             raise InstallerException(10506, "Creating shortcut failed")
 
+    def _save_install_config(self, application):
+        pass
+
     def run(self):
         try:
             pythoncom.CoInitialize()
             self._report_status("Downloading")
             file_path = self._fetch_zip(self._application.download_location)
             self._report_status("Unpacking")
-            # temp_destination = os.path.join(self._temp_file_location, self._application.name)
             temp_destination = self._unzip_files(file_path)
             self._report_status("Installing")
             installed_path = self._move_files(temp_destination)
@@ -140,8 +141,6 @@ class InstallApplication(threading.Thread):
             self._report_status("Finalizing")
             self._report_complete(True, "Success")
             self.application = Application(self._application.id, self._application.name, installed_path=installed_path, shortcut_path=shortcut_path, current_version=self._application.available_version)
-            self.complete = True
-
         except InstallerException as ex:
             self._report_complete(False, ex.message)
         except Exception as ex:

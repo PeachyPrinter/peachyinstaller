@@ -43,17 +43,17 @@ class InstallerAPI(object):
         except ConfigException:
             raise
         except Exception as ex:
-            print ex
+            logger.error(ex)
             raise ConfigException(10302, 'Web data File Corrupt or damaged')
 
-    def _get_file_config_path(self):
+    def _get_file_config_path(self, app_id):
         profile = os.getenv('USERPROFILE')
         company_name = "Peachy"
         app_name = 'PeachyInstaller'
-        return os.path.join(profile, 'AppData', 'Local', company_name, app_name, 'installed.json')
+        return os.path.join(profile, 'AppData', 'Local', company_name, app_name, 'app-{}.json'.format(app_id))
 
-    def _get_file_config(self,):
-        file_path = self._get_file_config_path()
+    def _get_file_config(self, app_id):
+        file_path = self._get_file_config_path(app_id)
         try:
             if not os.path.exists(file_path):
                 return None
@@ -68,15 +68,9 @@ class InstallerAPI(object):
     def initialize(self):
         try:
             web_config = self._get_web_config()
-            file_config = self._get_file_config()
-            if file_config:
-                file_config_ids = [app['id'] for app in file_config['applications']]
-            else:
-                file_config_ids = []
-
             for web_app in web_config['applications']:
-                if web_app['id'] in file_config_ids:
-                    file_app = [app for app in file_config['applications'] if app['id'] == web_app['id']][0]
+                file_app = self._get_file_config(web_app['id'])
+                if file_app:
                     self._applications.append(Application.from_configs(web_app, file_app))
                 else:
                     self._applications.append(Application.from_configs(web_app))
