@@ -14,7 +14,7 @@ class TestHelpers(object):
             "name": {
                 "en-us": "aa",
                 },
-            "version": "0.1.2",
+            "available_version": "0.1.2",
             "location": "http://someurl",
             "install_path": "bb",
             "executable": "cc.exe",
@@ -31,7 +31,7 @@ class TestHelpers(object):
             "name": {
                 "en-us": "aa",
                 },
-            "version": "0.1.1",
+            "current_version": "0.1.1",
             "installed_path": "bb",
             "shortcut_path": "dd"
     }
