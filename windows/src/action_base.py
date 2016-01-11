@@ -24,5 +24,5 @@ class ActionHandler(object):
     def _get_file_config_path(self, app_id):
         profile = os.getenv('USERPROFILE')
         company_name = "Peachy"
-        app_name = 'PeachyInstaller'
-        return os.path.join(profile, 'AppData', 'Local', company_name, app_name, 'app-{}.json'.format(app_id))
+        installer_name = 'PeachyInstaller'
+        return os.path.join(profile, 'AppData', 'Local', company_name, installer_name, 'app-{}.json'.format(app_id))
