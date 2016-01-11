@@ -91,7 +91,6 @@ class AddRemove(Frame):
             Label(labelframe, anchor=W, textvariable=self.app_vars[id]['status'], background=colour, pady=8, width=46).grid(row=y_pos, column=2, sticky=W)
         self._process_items()
 
-
     def _process_items(self):
         for item_id, status in self.items:
             print(item_id)
@@ -105,11 +104,10 @@ class AddRemove(Frame):
         self.app_vars[id]['status'].set(status)
 
     def complete_callback(self, success, message, id=None):
-        if success == False:
+        if not success:
             self.app_vars[id]['status'].set(message)
             self.app_vars[id]['error'] = message
         self.app_vars[id]['complete'] = True
-
 
 
 class InstallerUI(Frame):
@@ -155,6 +153,7 @@ def get_logfile_path():
         if not os.path.exists(path):
             os.makedirs(path)
         return path
+
 
 def setup_logging(args):
     logging_path = get_logfile_path()
