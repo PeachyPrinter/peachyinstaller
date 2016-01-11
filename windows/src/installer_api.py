@@ -3,7 +3,8 @@ import json
 import os
 
 from application import Application
-from application_install import InstallApplication
+# from application_install import InstallApplication
+from action_handler import AsyncActionHandler
 import logging
 logger = logging.getLogger('peachy')
 
@@ -18,7 +19,7 @@ class ConfigException(Exception):
 class InstallerAPI(object):
     supported_configuration_versions = [0, ]
 
-    def __init__(self, config_url="https://raw.githubusercontent.com/PeachyPrinter/peachyinstaller/master/config.json"):
+    def __init__(self, config_url):
         logger.info("Fetching configuration from {}".format(config_url))
         self._config_url = config_url
         self._applications = []
@@ -38,6 +39,7 @@ class InstallerAPI(object):
         try:
             data = result.read()
             config = json.loads(data)
+            logger.info(config)
             self._check_web_config(config)
             return config
         except ConfigException:
@@ -85,5 +87,12 @@ class InstallerAPI(object):
         return [app for app in self._applications if app.id == id][0]
 
     def process(self, id, base_install_path, install=False, remove=False, status_callback=None, complete_callback=None):
+        action = False
         if install:
-            InstallApplication(self.get_item(id), base_install_path, status_callback=status_callback, complete_callback=complete_callback).start()
+            action = 'install'
+        # if remove:
+        #     action = 'remove'
+        # if install and remove:
+        #     action = 'upgrade'
+        if action:
+            AsyncActionHandler(action, self.get_item(id), base_install_path, status_callback=status_callback, complete_callback=complete_callback).start()

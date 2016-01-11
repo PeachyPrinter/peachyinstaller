@@ -30,14 +30,14 @@ class Application(object):
             raise Exception("Unexpected error processing config")
         id = web_config['id']
         name = web_config['name']['en-us']
-        available_version = web_config['version']
+        available_version = web_config['available_version']
         download_location = web_config['location']
         relitive_install_path = web_config['install_path']
         icon = web_config['icon']
         executable_path = web_config['executable']
         if installed_config:
             installed_path = installed_config['installed_path']
-            current_version = installed_config['version']
+            current_version = installed_config['current_version']
             shortcut_path = installed_config['shortcut_path']
         else:
             installed_path = None

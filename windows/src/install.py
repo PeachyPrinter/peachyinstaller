@@ -27,12 +27,12 @@ class Selector(Frame):
             Label(frame_items, text=item.name, width=30, anchor='w', pady=8).grid(row=row, column=10)
             if item.current_version:
                 self.install_items[item.id] = IntVar(value=0)
-                Checkbutton(frame_items, text='remove', anchor='w', width=6, variable=self.install_items[item.id], onvalue=-1).grid(row=row, column=20)
+                Checkbutton(frame_items, text='Remove', anchor='w', width=6, variable=self.install_items[item.id], onvalue=-1).grid(row=row, column=20)
                 self.install_items[item.id] = IntVar(value=0)
-                Checkbutton(frame_items, text='upgrade', anchor='w', width=6, variable=self.install_items[item.id], onvalue=2).grid(row=row, column=30)
+                Checkbutton(frame_items, text='Upgrade', anchor='w', width=6, variable=self.install_items[item.id], onvalue=2).grid(row=row, column=30)
             else:
                 self.install_items[item.id] = IntVar(value=0)
-                Checkbutton(frame_items, text='add', anchor='w', width=6, variable=self.install_items[item.id], onvalue=1).grid(row=row, column=20)
+                Checkbutton(frame_items, text='Add', anchor='w', width=6, variable=self.install_items[item.id], onvalue=1).grid(row=row, column=20)
         frame_items.grid(row=0, column=0, columnspan=2)
 
         Label(self, anchor=W,  pady=8).grid(row=3, column=0, sticky=W)
@@ -185,9 +185,11 @@ def setup_logging(args):
 
 
 if __name__ == '__main__':
+    default_config_url = "https://raw.githubusercontent.com/PeachyPrinter/peachyinstaller/master/config.json"
     parser = argparse.ArgumentParser("Configure and print with Peachy Printer")
     parser.add_argument('-l', '--log',     dest='loglevel', action='store',      required=False, default="INFO", help="Enter the loglevel [DEBUG|INFO|WARNING|ERROR] default: WARNING")
     parser.add_argument('-t', '--console', dest='console',  action='store_true', required=False, help="Logs to console not file")
+    parser.add_argument('-a', '--alternate-config', dest='alt_config', action='store', required=False, default=default_config_url, help="Alternate url for config file")
     args, unknown = parser.parse_known_args()
 
     ASADMIN = 'asadmin'
@@ -198,16 +200,20 @@ if __name__ == '__main__':
         sys.exit(0)
 
     setup_logging(args)
-
-    api = InstallerAPI()
-    result, code, message = api.initialize()
-    print message
-    root = Tk()
-    root.wm_title("Peachy Installer")
-    root.resizable(width=FALSE, height=FALSE)
-    root.geometry('{}x{}'.format(640, 400))
-    if not result:
-        tkMessageBox.showinfo("Something annoying has occured", message)
-        sys.exit()
-    i = InstallerUI(api, master=root)
-    i.mainloop()
+    logger = logging.getLogger('peachy')
+    try:
+        api = InstallerAPI(args.alt_config)
+        result, code, message = api.initialize()
+        logger.info('{} -- {} -- {}'.format(result, code, message))
+        root = Tk()
+        root.wm_title("Peachy Installer")
+        root.resizable(width=FALSE, height=FALSE)
+        root.geometry('{}x{}'.format(640, 400))
+        if not result:
+            tkMessageBox.showinfo("Something annoying has occured", message)
+            sys.exit()
+        i = InstallerUI(api, master=root)
+        i.mainloop()
+    except Exception as ex:
+        logger.error(ex.message)
+        raise

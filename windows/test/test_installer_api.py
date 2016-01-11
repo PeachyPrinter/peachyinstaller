@@ -25,7 +25,7 @@ class InstallerAPITest(unittest.TestCase, TestHelpers):
 
     def test_initialize_should_return_a_tuple_and_error_when_internet_unavailable(self, mock_urllib2, mock_exists):
         mock_exists.return_value = False
-        test_installer_api = InstallerAPI()
+        test_installer_api = InstallerAPI('config_url')
         expected_result = (False, 10301, "Connection unavailable")
         mock_urllib2.urlopen.return_value = self.make_mock_response(code=404)
 
@@ -35,7 +35,7 @@ class InstallerAPITest(unittest.TestCase, TestHelpers):
 
     def test_initialize_should_return_a_setup_files_unavailable_if_cannot_be_parsed(self, mock_urllib2, mock_exists):
         mock_exists.return_value = False
-        test_installer_api = InstallerAPI()
+        test_installer_api = InstallerAPI('config_url')
         expected_result = (False, 10302, "Web data File Corrupt or damaged")
         mock_urllib2.urlopen.return_value = self.make_mock_response(code=200, data="empty")
 
@@ -45,7 +45,7 @@ class InstallerAPITest(unittest.TestCase, TestHelpers):
 
     def test_initialize_should_return_an_error_if_setup_file_valid_but_empty(self, mock_urllib2, mock_exists):
         mock_exists.return_value = False
-        test_installer_api = InstallerAPI()
+        test_installer_api = InstallerAPI('config_url')
         expected_result = (False, 10303, "Config is not valid")
         mock_urllib2.urlopen.return_value = self.make_mock_response(code=200, data="[]")
 
@@ -55,7 +55,7 @@ class InstallerAPITest(unittest.TestCase, TestHelpers):
 
     def test_initialize_should_return_an_error_if_setup_file_is_incorrect_version(self, mock_urllib2, mock_exists):
         mock_exists.return_value = False
-        test_installer_api = InstallerAPI()
+        test_installer_api = InstallerAPI('config_url')
         expected_result = (False, 10304, "Configuration version too new installer upgrade required")
         mock_urllib2.urlopen.return_value = self.make_mock_response(code=200, data='{"version": 2}')
 
@@ -74,7 +74,7 @@ class InstallerAPITest(unittest.TestCase, TestHelpers):
 
     def test_get_items_should_return_a_list_of_available_items(self, mock_urllib2, mock_exists):
         mock_exists.return_value = False
-        test_installer_api = InstallerAPI()
+        test_installer_api = InstallerAPI('config_url')
         sample = '{"version": 0, "applications":[%s]}' % json.dumps(self.get_sample_application_config())
         expected_result = [Application.from_configs(self.get_sample_application_config())]
         mock_urllib2.urlopen.return_value = self.make_mock_response(code=200, data=sample)
@@ -92,7 +92,7 @@ class InstallerAPITest(unittest.TestCase, TestHelpers):
         mock_open_file = mock_open()
         with patch('installer_api.open', mock_open_file, create=True):
             mock_open_file.side_effect = IOError("Mock Error")
-            test_installer_api = InstallerAPI()
+            test_installer_api = InstallerAPI('config_url')
             result = test_installer_api.initialize()
             self.assertEquals(expected_result, result)
 
@@ -103,7 +103,7 @@ class InstallerAPITest(unittest.TestCase, TestHelpers):
         mock_open_file = mock_open(read_data="Not Json")
         with patch('installer_api.open', mock_open_file, create=True):
             mock_open_file.read = IOError("Mock Error")
-            test_installer_api = InstallerAPI()
+            test_installer_api = InstallerAPI('config_url')
             result = test_installer_api.initialize()
             self.assertEquals(expected_result, result)
 
@@ -114,7 +114,7 @@ class InstallerAPITest(unittest.TestCase, TestHelpers):
         expected_app = Application.from_configs(self.get_sample_application_config(), self.get_sample_installed_config())
 
         with patch('installer_api.open', mock_open_file, create=True):
-            test_installer_api = InstallerAPI()
+            test_installer_api = InstallerAPI('config_url')
 
             result = test_installer_api.initialize()
             self.assertTrue(result[0])
@@ -127,7 +127,7 @@ class InstallerAPITest(unittest.TestCase, TestHelpers):
         mock_exists.return_value = False
         mock_urllib2.urlopen.return_value = self.make_mock_response(code=200, data=self.get_sample_web_config())
         expected_app = Application.from_configs(self.get_sample_application_config())
-        test_installer_api = InstallerAPI()
+        test_installer_api = InstallerAPI('config_url')
 
         result = test_installer_api.initialize()
         self.assertTrue(result[0])
@@ -135,32 +135,32 @@ class InstallerAPITest(unittest.TestCase, TestHelpers):
 
         self.assertEquals(expected_app, app)
 
-    @patch('installer_api.InstallApplication')
-    def test_process_should_create_and_start_an_installer_for_item_if_install_true(self, mock_InstallApplication, mock_urllib2, mock_exists):
+    @patch('installer_api.AsyncActionHandler')
+    def test_process_should_create_and_start_an_installer_for_item_if_install_true(self, mock_AsyncActionHandler, mock_urllib2, mock_exists):
         mock_exists.return_value = False
         mock_urllib2.urlopen.return_value = self.make_mock_response(code=200, data=self.get_sample_web_config())
         expected_app = Application.from_configs(self.get_sample_application_config())
-        test_installer_api = InstallerAPI()
+        test_installer_api = InstallerAPI('config_url')
 
         result = test_installer_api.initialize()
         self.assertTrue(result[0], result)
         test_installer_api.process(expected_app.id, 'base_folder', install=True, status_callback='status_callback', complete_callback='complete_callback')
 
-        mock_InstallApplication.assert_called_with(expected_app, 'base_folder', status_callback='status_callback', complete_callback='complete_callback')
-        mock_InstallApplication.return_value.start.assert_called_with()
+        mock_AsyncActionHandler.assert_called_with('install', expected_app, 'base_folder', status_callback='status_callback', complete_callback='complete_callback')
+        mock_AsyncActionHandler.return_value.start.assert_called_with()
 
-    @patch('installer_api.InstallApplication')
-    def test_process_should_not_create_and_start_an_installer_for_item_if_install_false(self, mock_InstallApplication, mock_urllib2, mock_exists):
+    @patch('installer_api.AsyncActionHandler')
+    def test_process_should_not_create_and_start_an_installer_for_item_if_install_false(self, mock_AsyncActionHandler, mock_urllib2, mock_exists):
         mock_exists.return_value = False
         mock_urllib2.urlopen.return_value = self.make_mock_response(code=200, data=self.get_sample_web_config())
         expected_app = Application.from_configs(self.get_sample_application_config())
-        test_installer_api = InstallerAPI()
+        test_installer_api = InstallerAPI('config_url')
 
         result = test_installer_api.initialize()
         self.assertTrue(result[0], result)
         test_installer_api.process(expected_app.id, 'base_folder', install=False, status_callback='status_callback', complete_callback='complete_callback')
 
-        mock_InstallApplication.assert_not_called()
+        mock_AsyncActionHandler.assert_not_called()
 
 if __name__ == '__main__':
     logging.basicConfig(format='%(asctime)s %(levelname)s: %(message)s', level='INFO')
