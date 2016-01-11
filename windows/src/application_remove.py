@@ -3,7 +3,7 @@ from os.path import isfile, isdir
 from shutil import rmtree
 import logging
 
-from action_handler import ActionHandler, ActionHandlerException
+from action_base import ActionHandler, ActionHandlerException
 
 logger = logging.getLogger('peachy')
 

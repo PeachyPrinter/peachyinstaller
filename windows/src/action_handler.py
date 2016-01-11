@@ -3,6 +3,7 @@ import os
 import logging
 
 from application_install import InstallApplication
+from application_remove import RemoveApplication
 from action_base import ActionHandlerException, ActionHandler
 
 logger = logging.getLogger('peachy')
@@ -20,13 +21,16 @@ class AsyncActionHandler(threading.Thread, ActionHandler):
 
     def run(self):
         try:
-            if self._action == 'remove' or self._action == 'upgrade':
-                pass
+            if self._action == 'remove':
+                RemoveApplication(self._application, status_callback=self._status_callback).start()
+            elif self._action == 'upgrade':
+                RemoveApplication(self._application, status_callback=self._status_callback).start()
+                InstallApplication(self._application, self._base_path, status_callback=self._status_callback).start()
             elif self._action == 'install':
                 InstallApplication(self._application, self._base_path, status_callback=self._status_callback).start()
-                self._report_complete(True, "Success")
             else:
                 raise Exception("Action unsupported")
+            self._report_complete(True, "Success")
         except ActionHandlerException as ex:
             self._report_complete(False, ex.message)
         except Exception as ex:
