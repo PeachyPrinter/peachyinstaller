@@ -55,7 +55,7 @@ class InstallApplication(ActionHandler):
                     if not chunk:
                         break
                     total_read += len(chunk)
-                    logger.debug("Reading chunk: {}".format(total_read))
+                    self._report_status("Downloading: {}KB".format(total_read / 1024))
                     zip_file.write(chunk)
             return file_path
         except IOError:
