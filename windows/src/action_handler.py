@@ -30,8 +30,10 @@ class AsyncActionHandler(threading.Thread, ActionHandler):
                 InstallApplication(self._application, self._base_path, status_callback=self._status_callback).start()
             else:
                 raise Exception("Action unsupported")
+            self._report_status("Complete")
             self._report_complete(True, "Success")
         except ActionHandlerException as ex:
+            self._report_status("Failed")
             self._report_complete(False, ex.message)
         except Exception as ex:
             logger.error(ex)

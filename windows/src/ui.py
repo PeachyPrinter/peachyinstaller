@@ -22,13 +22,17 @@ class Selector(Frame):
         for item in self._api.get_items():
             row += 10
             Label(frame_items, text=item.name, width=30, anchor='w', pady=8).grid(row=row, column=10)
-            self.install_items[item.id] = IntVar(value=0)
+            self.install_items[item.id] = {}
+            self.install_items[item.id]['remove'] = IntVar(value=0)
+            self.install_items[item.id]['upgrade'] = IntVar(value=0)
+            self.install_items[item.id]['install'] = IntVar(value=0)
+
             if item.current_version:
-                Checkbutton(frame_items, text='Remove', anchor='w', width=6, variable=self.install_items[item.id], onvalue=3).grid(row=row, column=20)
+                Checkbutton(frame_items, text='Remove', anchor='w', width=6, variable=self.install_items[item.id]['remove'], onvalue=1, offvalue=0, command=self._can_continue).grid(row=row, column=20)
                 if item.current_version != item.available_version:
-                    Checkbutton(frame_items, text='Upgrade', anchor='w', width=6, variable=self.install_items[item.id], onvalue=2).grid(row=row, column=30)
+                    Checkbutton(frame_items, text='Upgrade', anchor='w', width=6, variable=self.install_items[item.id]['upgrade'], onvalue=1, offvalue=0, command=self._can_continue).grid(row=row, column=30)
             else:
-                Checkbutton(frame_items, text='Add', anchor='w', width=6, variable=self.install_items[item.id], onvalue=1).grid(row=row, column=20)
+                Checkbutton(frame_items, text='Install', anchor='w', width=6, variable=self.install_items[item.id]['install'], onvalue=1, offvalue=0, command=self._can_continue).grid(row=row, column=20)
         frame_items.grid(row=0, column=0, columnspan=2)
 
         Label(self, anchor=W,  pady=8).grid(row=3, column=0, sticky=W)
@@ -46,21 +50,28 @@ class Selector(Frame):
     def _cancel(self):
         sys.exit()
 
-    def _get_action_from_id(self, state):
-        logger.info("State {}".format(state))
-        if state == 3:
-            return 'remove'
-        elif state == 1:
+    def _get_action(self, state):
+        codes = dict([(action, value.get()) for (action, value) in state.items()])
+        if codes['install'] == 1:
             return 'install'
-        elif state == 2:
+        if codes['upgrade'] == 1:
             return 'upgrade'
+        if codes['remove'] == 1:
+            return 'remove'
         else:
             return None
 
+    def _can_continue(self):
+        pass
+
     def _continue(self):
-        self.parent.install_items = dict([(item, self._get_action_from_id(state.get())) for (item, state) in self.install_items.items() if state != 0])
-        self.parent.install_path = self.install_path.get()
-        self.master.event_generate("<<CloseSelect>>")
+        try:
+            all_items = [(item, self._get_action(check)) for (item, check) in self.install_items.items()]
+            self.parent.install_items = dict([(item, action) for (item, action) in all_items if action is not None])
+            self.parent.install_path = self.install_path.get()
+            self.master.event_generate("<<CloseSelect>>")
+        except Exception as ex:
+            logger.error(ex.message)
 
 
 class AddRemove(Frame):
@@ -79,7 +90,7 @@ class AddRemove(Frame):
         Label(labelframe, anchor=W, text="App", pady=8, width=30).grid(row=0, column=0, sticky=W)
         Label(labelframe, anchor=W, text="Action", pady=8, width=10).grid(row=0, column=1, sticky=W)
         Label(labelframe, anchor=W, text="Status", pady=8, width=46).grid(row=0, column=2, sticky=W)
-        
+
         logger.info('Adding Applications')
         self.app_vars = {}
         y_pos = 0
