@@ -144,13 +144,13 @@ class InstallerAPITest(unittest.TestCase, TestHelpers):
 
         result = test_installer_api.initialize()
         self.assertTrue(result[0], result)
-        test_installer_api.process(expected_app.id, 'base_folder', install=True, status_callback='status_callback', complete_callback='complete_callback')
+        test_installer_api.process(expected_app.id, 'base_folder', action='install', status_callback='status_callback', complete_callback='complete_callback')
 
         mock_AsyncActionHandler.assert_called_with('install', expected_app, 'base_folder', status_callback='status_callback', complete_callback='complete_callback')
         mock_AsyncActionHandler.return_value.start.assert_called_with()
 
     @patch('installer_api.AsyncActionHandler')
-    def test_process_should_not_create_and_start_an_installer_for_item_if_install_false(self, mock_AsyncActionHandler, mock_urllib2, mock_exists):
+    def test_process_should_create_and_start_an_remover_for_item_if_install_true(self, mock_AsyncActionHandler, mock_urllib2, mock_exists):
         mock_exists.return_value = False
         mock_urllib2.urlopen.return_value = self.make_mock_response(code=200, data=self.get_sample_web_config())
         expected_app = Application.from_configs(self.get_sample_application_config())
@@ -158,11 +158,40 @@ class InstallerAPITest(unittest.TestCase, TestHelpers):
 
         result = test_installer_api.initialize()
         self.assertTrue(result[0], result)
-        test_installer_api.process(expected_app.id, 'base_folder', install=False, status_callback='status_callback', complete_callback='complete_callback')
+        test_installer_api.process(expected_app.id, 'base_folder', action='remove', status_callback='status_callback', complete_callback='complete_callback')
+
+        mock_AsyncActionHandler.assert_called_with('remove', expected_app, 'base_folder', status_callback='status_callback', complete_callback='complete_callback')
+        mock_AsyncActionHandler.return_value.start.assert_called_with()
+
+    @patch('installer_api.AsyncActionHandler')
+    def test_process_should_create_and_start_an_upgrader_for_item_if_install_true(self, mock_AsyncActionHandler, mock_urllib2, mock_exists):
+        mock_exists.return_value = False
+        mock_urllib2.urlopen.return_value = self.make_mock_response(code=200, data=self.get_sample_web_config())
+        expected_app = Application.from_configs(self.get_sample_application_config())
+        test_installer_api = InstallerAPI('config_url')
+
+        result = test_installer_api.initialize()
+        self.assertTrue(result[0], result)
+        test_installer_api.process(expected_app.id, 'base_folder', action='upgrade', status_callback='status_callback', complete_callback='complete_callback')
+
+        mock_AsyncActionHandler.assert_called_with('upgrade', expected_app, 'base_folder', status_callback='status_callback', complete_callback='complete_callback')
+        mock_AsyncActionHandler.return_value.start.assert_called_with()
+
+    @patch('installer_api.AsyncActionHandler')
+    def test_process_should_raise_if_nothing_selected(self, mock_AsyncActionHandler, mock_urllib2, mock_exists):
+        mock_exists.return_value = False
+        mock_urllib2.urlopen.return_value = self.make_mock_response(code=200, data=self.get_sample_web_config())
+        expected_app = Application.from_configs(self.get_sample_application_config())
+        test_installer_api = InstallerAPI('config_url')
+
+        result = test_installer_api.initialize()
+        self.assertTrue(result[0], result)
+
+        with self.assertRaises(Exception):
+            test_installer_api.process(expected_app.id, 'base_folder', action='wrong', status_callback='status_callback', complete_callback='complete_callback')
 
         mock_AsyncActionHandler.assert_not_called()
 
 if __name__ == '__main__':
     logging.basicConfig(format='%(asctime)s %(levelname)s: %(message)s', level='INFO')
     unittest.main()
-

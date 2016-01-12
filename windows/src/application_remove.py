@@ -54,4 +54,3 @@ class RemoveApplication(ActionHandler):
         self.remove_shortcut()
         self.remove_install_history()
 
-        

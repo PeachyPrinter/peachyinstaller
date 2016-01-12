@@ -39,7 +39,6 @@ class InstallerAPI(object):
         try:
             data = result.read()
             config = json.loads(data)
-            logger.info(config)
             self._check_web_config(config)
             return config
         except ConfigException:
@@ -86,13 +85,10 @@ class InstallerAPI(object):
     def get_item(self, id):
         return [app for app in self._applications if app.id == id][0]
 
-    def process(self, id, base_install_path, install=False, remove=False, status_callback=None, complete_callback=None):
-        action = False
-        if install:
-            action = 'install'
-        # if remove:
-        #     action = 'remove'
-        # if install and remove:
-        #     action = 'upgrade'
-        if action:
-            AsyncActionHandler(action, self.get_item(id), base_install_path, status_callback=status_callback, complete_callback=complete_callback).start()
+    def process(self, id, base_install_path, action, status_callback=None, complete_callback=None):
+        if action in ['install', 'remove', 'upgrade']:
+            application = self.get_item(id)
+            logger.info("Started {} of {} to {}".format(action, application.name, base_install_path))
+            AsyncActionHandler(action, application, base_install_path, status_callback=status_callback, complete_callback=complete_callback).start()
+        else:
+            raise Exception("Nothing to do")
