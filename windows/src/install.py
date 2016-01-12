@@ -57,12 +57,12 @@ if __name__ == '__main__':
     parser.add_argument('-a', '--alternate-config', dest='alt_config', action='store', required=False, default=default_config_url, help="Alternate url for config file")
     args, unknown = parser.parse_known_args()
 
-    # ASADMIN = 'asadmin'
-    # if sys.argv[-1] != ASADMIN:
-    #     script = os.path.abspath(sys.argv[0])
-    #     params = ' '.join([script] + sys.argv[1:] + [ASADMIN])
-    #     shell.ShellExecuteEx(lpVerb='runas', lpFile=sys.executable, lpParameters=params)
-    #     sys.exit(0)
+    ASADMIN = 'asadmin'
+    if sys.argv[-1] != ASADMIN:
+        script = os.path.abspath(sys.argv[0])
+        params = ' '.join([script] + sys.argv[1:] + [ASADMIN])
+        shell.ShellExecuteEx(lpVerb='runas', lpFile=sys.executable, lpParameters=params)
+        sys.exit(0)
 
     setup_logging(args)
     logger = logging.getLogger('peachy')
