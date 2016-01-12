@@ -36,7 +36,7 @@ class AsyncActionHandlerTest(unittest.TestCase, TestHelpers):
         mock_InstallApplication.assert_called_with(app, base_path, status_callback=status_cb)
         mock_InstallApplication.return_value.start.assert_called_with()
         self.assertFalse(mock_RemoveApplication.called)
-        status_cb.assert_called_with("Initializing")
+        status_cb.assert_called_with("Complete")
         complete_cb.assert_called_with(True, "Success")
 
     def test_raises_errors_correctly(self, mock_InstallApplication, mock_RemoveApplication):
@@ -54,7 +54,7 @@ class AsyncActionHandlerTest(unittest.TestCase, TestHelpers):
         mock_InstallApplication.assert_called_with(app, base_path, status_callback=status_cb)
         mock_InstallApplication.return_value.start.assert_called_with()
         self.assertFalse(mock_RemoveApplication.called)
-        status_cb.assert_called_with("Initializing")
+        status_cb.assert_called_with("Failed")
         complete_cb.assert_called_with(False, "Kaboom")
 
     def test_removes_as_expected(self, mock_InstallApplication, mock_RemoveApplication):
@@ -72,7 +72,7 @@ class AsyncActionHandlerTest(unittest.TestCase, TestHelpers):
         mock_RemoveApplication.return_value.start.assert_called_with()
         self.assertFalse(mock_InstallApplication.called)
 
-        status_cb.assert_called_with("Initializing")
+        status_cb.assert_called_with("Complete")
         complete_cb.assert_called_with(True, "Success")
 
     def test_upgrades_as_expected(self, mock_InstallApplication, mock_RemoveApplication):
@@ -91,7 +91,7 @@ class AsyncActionHandlerTest(unittest.TestCase, TestHelpers):
         mock_InstallApplication.assert_called_with(app, base_path, status_callback=status_cb)
         mock_InstallApplication.return_value.start.assert_called_with()
 
-        status_cb.assert_called_with("Initializing")
+        status_cb.assert_called_with("Complete")
         complete_cb.assert_called_with(True, "Success")
 
 if __name__ == '__main__':

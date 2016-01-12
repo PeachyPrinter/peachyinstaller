@@ -44,8 +44,8 @@ class Selector(Frame):
 
         button_cancel = Button(self, text="Cancel", command=self._cancel)
         button_cancel.grid(row=6, column=0, sticky=W)
-        button_proceed = Button(self, text="Continue", command=self._continue)
-        button_proceed.grid(row=6, column=1, sticky=E)
+        self.button_proceed = Button(self, text="Continue", command=self._continue, state=DISABLED)
+        self.button_proceed.grid(row=6, column=1, sticky=E)
 
     def _cancel(self):
         sys.exit()
@@ -62,7 +62,12 @@ class Selector(Frame):
             return None
 
     def _can_continue(self):
-        pass
+        all_items = [(self._get_action(check)) for (item, check) in self.install_items.items()]
+        check = ''.join([item for item in all_items if item is not None])
+        if len(check) > 0:
+            self.button_proceed.configure(state=NORMAL)
+        else:
+            self.button_proceed.configure(state=DISABLED)
 
     def _continue(self):
         try:
@@ -130,10 +135,8 @@ class AddRemove(Frame):
             self._update_ui()
 
     def _update_ui(self):
-        logger.info("PRE-Button")
         button_exit = Button(self, text="Exit", command=sys.exit)
         button_exit.grid(row=99, column=1, sticky=E)
-        logger.info("POST-Button")
 
     def status_callback(self, status, id=None):
         self.app_vars[id]['status'].set(status)
