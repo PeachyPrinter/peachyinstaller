@@ -1,11 +1,12 @@
 import urllib2
 import json
 import os
-
-from application import Application
-# from application_install import InstallApplication
-from action_handler import AsyncActionHandler
 import logging
+
+from config import supported_configuration_versions
+from application import Application
+from action_handler import AsyncActionHandler
+
 logger = logging.getLogger('peachy')
 
 
@@ -17,8 +18,6 @@ class ConfigException(Exception):
 
 
 class InstallerAPI(object):
-    supported_configuration_versions = [0, ]
-
     def __init__(self, config_url):
         logger.info("Fetching configuration from {}".format(config_url))
         self._config_url = config_url
@@ -27,7 +26,7 @@ class InstallerAPI(object):
 
     def _check_web_config(self, config):
         if "version" in config:
-            if config["version"] not in self.supported_configuration_versions:
+            if config["version"] not in supported_configuration_versions:
                 raise ConfigException(10304,  "Configuration version too new installer upgrade required")
         else:
             raise ConfigException(10303, "Config is not valid")

@@ -6,8 +6,8 @@
 			"name":	{
 				"en-us": "Peachy Printer (64 bit)"
 				},
-			"available_version": "0.6.616",
-			"location": "http://192.168.1.18:8080/view/KivyUI/job/KivyUI%20-%20Alt%20Package%20Window64/lastSuccessfulBuild/artifact/PeachyPrinter_amd64-0.6.616.zip",
+			"available_version": "0.7.618",
+			"location": "https://github.com/PeachyPrinter/kivypeachyprinter/releases/download/0.7.x/PeachyPrinter_amd64-0.7.618.zip",
 			"install_path": "PeachyPrinter_64",
 			"executable" : "PeachyPrinter.exe",
 			"install_type": "zip",
@@ -18,8 +18,8 @@
 			"name":	{
 				"en-us": "Peachy Printer (32 bit)"
 				},
-			"available_version": "0.6.616",
-			"location": "http://192.168.1.18:8080/view/KivyUI/job/KivyUI%20-%20Alt%20Package%20Window32/lastSuccessfulBuild/artifact/PeachyPrinter_x86-0.6.616.zip",
+			"available_version": "0.7.618",
+			"location": "https://github.com/PeachyPrinter/kivypeachyprinter/releases/download/0.7.x/PeachyPrinter_x86-0.7.618.zip",
 			"install_path": "PeachyPrinter_32",
 			"executable" : "PeachyPrinter.exe",
 			"install_type": "zip",

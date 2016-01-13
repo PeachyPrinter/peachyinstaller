@@ -6,8 +6,10 @@ import argparse
 from Tkinter import *
 import tkMessageBox
 
+from config import default_config_url
 from ui import InstallerUI
 from installer_api import InstallerAPI
+
 
 
 def get_logfile_path():
@@ -50,7 +52,6 @@ def setup_logging(args):
 
 
 if __name__ == '__main__':
-    default_config_url = "https://raw.githubusercontent.com/PeachyPrinter/peachyinstaller/master/config.json"
     parser = argparse.ArgumentParser("Configure and print with Peachy Printer")
     parser.add_argument('-l', '--log',     dest='loglevel', action='store',      required=False, default="INFO", help="Enter the loglevel [DEBUG|INFO|WARNING|ERROR] default: WARNING")
     parser.add_argument('-t', '--console', dest='console',  action='store_true', required=False, help="Logs to console not file")
@@ -65,7 +66,7 @@ if __name__ == '__main__':
         sys.exit(0)
 
     setup_logging(args)
-    logger = logging.getLogger('peachy')
+    logger = logging.getLogger('peashy')
     try:
         api = InstallerAPI(args.alt_config)
         result, code, message = api.initialize()
@@ -76,6 +77,9 @@ if __name__ == '__main__':
         root.geometry('{}x{}'.format(640, 400))
         if not result:
             tkMessageBox.showinfo("Something annoying has occured", message)
+            if code == 10304:
+                import webbrowser
+                webbrowser.open('https://github.com/PeachyPrinter/peachyinstaller/releases', new=0, autoraise=True)
             sys.exit()
         i = InstallerUI(api, master=root)
         i.mainloop()
