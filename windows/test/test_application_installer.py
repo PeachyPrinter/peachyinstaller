@@ -59,7 +59,7 @@ class InstallApplicationTest(unittest.TestCase, TestHelpers):
         with self.assertRaises(ActionHandlerException) as expected_exception:
             installer.start()
         self.assertEqual(10507, expected_exception.exception.error_code)
-        self.assertEqual("Bad URL", expected_exception.exception.message)
+        self.assertEqual("Could not find application at specified URL", expected_exception.exception.message)
 
     def test_run_should_raise_exception_if_cannot_open_file(self, mock_urlib2, mock_ZipFile, mock_move, mock_listdir, mock_isdir, mock_create_shortcut):
         mock_urlib2.urlopen.return_value = self.get_mock_response(code=200)

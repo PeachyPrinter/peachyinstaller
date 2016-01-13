@@ -10,8 +10,6 @@ from config import default_config_url
 from ui import InstallerUI
 from installer_api import InstallerAPI
 
-
-
 def get_logfile_path():
         profile = os.getenv('USERPROFILE')
         company_name = "Peachy"

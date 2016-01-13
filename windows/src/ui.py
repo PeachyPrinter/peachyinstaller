@@ -40,8 +40,8 @@ class Selector(Frame):
 
         Label(self, anchor=W,  pady=8).grid(row=3, column=0, sticky=W)
 
-        Label(self, anchor=W, text="Install to", pady=8, width=11).grid(row=4, column=0, sticky=W)
-        Entry(self, textvariable=self.install_path, width=85).grid(row=4, column=1, sticky=W)
+        Label(self, anchor=W, text="Install to", pady=8, width=8).grid(row=4, column=0, sticky=W)
+        Entry(self, textvariable=self.install_path, width=88).grid(row=4, column=1, sticky=E+W)
         Button(self, text=u'\u16A0', command=self.select_folder, width=2).grid(row=4, column=2, sticky=W)
 
         Label(self, anchor=W, pady=8).grid(row=5, column=0, sticky=W)
@@ -49,7 +49,7 @@ class Selector(Frame):
         button_cancel = Button(self, text="Cancel", command=self._cancel)
         button_cancel.grid(row=6, column=0, sticky=W)
         self.button_proceed = Button(self, text="Continue", command=self._continue, state=DISABLED)
-        self.button_proceed.grid(row=6, column=1, sticky=E)
+        self.button_proceed.grid(row=6, column=1, columnspan=2, sticky=E)
 
     def select_folder(self):
             logger.info("Entered folder selection")
@@ -101,9 +101,9 @@ class AddRemove(Frame):
         logger.info('Creating Progress Gui')
         labelframe = LabelFrame(self, text='Updating applications')
         labelframe.grid(row=1, column=1)
-        Label(labelframe, anchor=W, text="App", pady=8, width=30, font = "Helvetica 10 bold").grid(row=0, column=0, sticky=W)
+        Label(labelframe, anchor=W, text="App", pady=8, width=20, font = "Helvetica 10 bold").grid(row=0, column=0, sticky=W)
         Label(labelframe, anchor=W, text="Action", pady=8, width=10, font = "Helvetica 10 bold").grid(row=0, column=1, sticky=W)
-        Label(labelframe, anchor=W, text="Status", pady=8, width=46, font = "Helvetica 10 bold").grid(row=0, column=2, sticky=W)
+        Label(labelframe, anchor=W, text="Status", pady=8, width=45, font = "Helvetica 10 bold").grid(row=0, column=2, sticky=W)
         Frame(labelframe, bg="black", height=2).grid(row=1, column=0, columnspan=3, sticky=N+E+S+W)
 
         logger.info('Adding Applications')
@@ -120,9 +120,9 @@ class AddRemove(Frame):
                 'complete': False,
                 'error': None
                 }
-            Label(labelframe, anchor=W, textvariable=self.app_vars[id]['name'], background=colour, pady=8, width=30).grid(row=y_pos, column=0, sticky=E+W)
+            Label(labelframe, anchor=W, textvariable=self.app_vars[id]['name'], background=colour, pady=8, width=20).grid(row=y_pos, column=0, sticky=E+W)
             Label(labelframe, anchor=W, textvariable=self.app_vars[id]['action'], background=colour, pady=8, width=10).grid(row=y_pos, column=1, sticky=E+W)
-            Label(labelframe, anchor=W, textvariable=self.app_vars[id]['status'], background=colour, pady=8, width=46).grid(row=y_pos, column=2, sticky=E+W)
+            Label(labelframe, anchor=W, textvariable=self.app_vars[id]['status'], background=colour, pady=8, width=45).grid(row=y_pos, column=2, sticky=E+W)
         self._process_items()
 
     def _process_items(self):
@@ -145,7 +145,9 @@ class AddRemove(Frame):
             self._update_ui()
 
     def _update_ui(self):
-        button_exit = Button(self, text="Exit", command=sys.exit)
+        bo = Label(self, width=10, text='')
+        bo.grid(row=90, column=1, sticky=E)
+        button_exit = Button(self, text="Exit", command=sys.exit, pady=8, width=10)
         button_exit.grid(row=99, column=1, sticky=E)
 
     def status_callback(self, status, id=None):

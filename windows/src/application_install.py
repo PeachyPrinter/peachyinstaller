@@ -41,7 +41,7 @@ class InstallApplication(ActionHandler):
             response = urllib2.urlopen(url)
         except Exception as ex:
             logger.error(ex)
-            raise ActionHandlerException(10507, 'Bad URL')
+            raise ActionHandlerException(10507, 'Could not find application at specified URL')
         if response.getcode() != 200:
             raise ActionHandlerException(10501, "Got error {} accessing {}".format(response.getcode(), url))
         file_path = os.path.join(self._temp_file_location, url.split('/')[-1])
