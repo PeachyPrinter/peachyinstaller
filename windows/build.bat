@@ -66,6 +66,7 @@ IF NOT "%ERRORLEVEL%" == "0" (
 )
 cd ..
 
+call python -m pip install mock==1.0.1
 call test.bat
 IF NOT "%ERRORLEVEL%" == "0" (
   ECHO FAILED executing command: test.bat
