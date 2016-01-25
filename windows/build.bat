@@ -36,7 +36,7 @@ ECHO ------------------------------------
 ECHO Extracting Git Revision Number
 ECHO ------------------------------------
 
-SET SEMANTIC=0.0.1
+SET SEMANTIC=1.0.0
 SET /p SEMANTIC=<symantic.version
 IF NOT DEFINED GIT_HOME (
   git --version
