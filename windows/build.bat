@@ -1,5 +1,7 @@
 @ECHO OFF
 
+SET PYTHON_PATH=c:\Python27_32
+
 ECHO ------------------------------------
 ECHO Cleaning workspace
 ECHO ------------------------------------
@@ -15,11 +17,11 @@ ECHO ------------------------------------
 ECHO Setting up Enviroment
 ECHO ------------------------------------
 
-call virtualenv venv
+call %PYTHON_PATH%\Scripts\virtualenv venv
 call venv\Scripts\activate.bat
 
 ECHO ----Adding PyInstaller----
-call pip install --upgrade PyInstaller
+call python -m pip install --upgrade PyInstaller
 
 
 ECHO -----------------------------------
