@@ -8,6 +8,7 @@ DEL /Q *.exe
 DEL /q 
 RMDIR /S /Q build
 RMDIR /S /Q dist
+RMDIR /S /Q venv
 DEL /S *.pyc
 
 ECHO ------------------------------------
@@ -64,6 +65,12 @@ IF NOT "%ERRORLEVEL%" == "0" (
   EXIT /B 78
 )
 cd ..
+
+call test.bat
+IF NOT "%ERRORLEVEL%" == "0" (
+  ECHO FAILED executing command: test.bat
+  EXIT /B 78
+)
 
 ECHO ------------------------------------
 ECHO Moving file
