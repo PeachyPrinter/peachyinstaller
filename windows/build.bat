@@ -21,9 +21,11 @@ call %PYTHON_PATH%\Scripts\virtualenv venv
 call venv\Scripts\activate.bat
 
 ECHO ----Adding PyInstaller----
-call python -m pip install --upgrade PyInstaller==3.1
-call python -m pip install --upgrade pip
-call python -m pip install --upgrade setuptools==19.2
+python -m pip install --upgrade PyInstaller==3.1
+python -m pip install --upgrade pip
+python -m pip install --upgrade setuptools==19.2
+python -m pip install --upgrade wheel==0.26.0
+python -m pip install --upgrade pypiwin32==219
 
 
 ECHO -----------------------------------
