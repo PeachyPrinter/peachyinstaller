@@ -7,7 +7,7 @@
 				"en-us": "Peachy Printer (64 bit)"
 				},
 			"available_version": "1.0.0.641",
-			"location": "https://github.com/PeachyPrinter/peachyprinter/releases/download/1.0.0/PeachyPrinter_amd64-1.0.0.641.zip",
+			"location": "https://github.com/PeachyPrinter/peachyprinter/releases/download/1.1.0.718/PeachyPrinter_amd64-1.1.0.718.zip",
 			"install_path": "PeachyPrinter_64",
 			"executable" : "PeachyPrinter.exe",
 			"install_type": "zip",
@@ -19,7 +19,7 @@
 				"en-us": "Peachy Printer (32 bit)"
 				},
 			"available_version": "1.0.0.641",
-			"location": "https://github.com/PeachyPrinter/peachyprinter/releases/download/1.0.0/PeachyPrinter_x86-1.0.0.641.zip",
+			"location": "https://github.com/PeachyPrinter/peachyprinter/releases/download/1.1.0.718/PeachyPrinter_x86-1.1.0.718.zip",
 			"install_path": "PeachyPrinter_32",
 			"executable" : "PeachyPrinter.exe",
 			"install_type": "zip",
